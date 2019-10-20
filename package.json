@@ -1,0 +1,60 @@
+{
+	"name": "sysmon",
+	"displayName": "Sysmon",
+	"description": "Microsoft Sysinternals Sysmon Configuration file authoring extension.",
+	"version": "1.0.0",
+	"engines": {
+		"vscode": "^1.39.0"
+	},
+	"categories": [
+		"Other",
+		"Programming Languages",
+    	"Snippets"
+	],
+	"activationEvents": [
+
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "extension.helloWorld",
+				"title": "Hello World"
+			}
+		],
+		"snippets": [{
+			"language": "smc",
+			"path": "./snippets/smc.json"
+		}],
+
+		"languages": [{
+            "id": "smc",
+            "aliases": ["Sysmon", "smc"],
+            "extensions": ["smc", "xml"],
+            "configuration": "./language-configuration.json"
+		}],
+		"grammars": [{
+            "language": "smc",
+            "scopeName": "source.sysmon",
+            "path": "./syntaxes/smc.tmLanguage.json"
+        }]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^5.2.6",
+		"@types/node": "^10.12.21",
+		"@types/vscode": "^1.39.0",
+		"glob": "^7.1.4",
+		"mocha": "^6.1.4",
+		"typescript": "^3.3.1",
+		"tslint": "^5.12.1",
+		"vscode-test": "^1.2.0"
+	}
+}
