@@ -20,7 +20,7 @@ A RuleGroups and Rules snippets have options ready for name and setting logic.
 
 ![Configuration Template](images/rulegroup.gif)
 
-Individual filters in a Rule or outside of one are easier to write. 
+Individual filters in a Rule or outside of one are easier to write.
 
 ![Filter](images/filter.gif)
 
@@ -36,7 +36,7 @@ General snippets for the building of the initial structure of the configuration 
 | rule | Sysmon Rule |
 | condition | Filter condition operator used |
 
-Snippets for each of the individual filters available in the schema with the exception of the run time unique ones that one would not filter on like ProcessID, UTC Time, Sysmon system unique GUIDs and others. 
+Snippets for each of the individual filters available in the schema with the exception of the run time unique ones that one would not filter on like ProcessID, UTC Time, Sysmon system unique GUIDs and others.
 
 | Name     | Description     |
 |----------|-----------------|
