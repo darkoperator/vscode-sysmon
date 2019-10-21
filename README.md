@@ -10,10 +10,21 @@ This extensions offers a series of snippets for helping in building a Microsofty
 
 Change the language to Sysmon on a existing XML file or use the extension ".smc".
 
-![Set Language to Sysmon](https://raw.githubusercontent.com/darkoperator/vscode-sysmon/master/images/setlang.gif)
+![Set Language to Sysmon](images/setlang.gif)
 
+It is easy to create a initial configuration with the snippets.
 
-### Snippets
+![Configuration Template](images/config.gif)
+
+A RuleGroups and Rules snippets have options ready for name and setting logic.
+
+![Configuration Template](images/rulegroup.gif)
+
+Individual filters in a Rule or outside of one are easier to write. 
+
+![Filter](images/filter.gif)
+
+## Snippets
 
 General snippets for the building of the initial structure of the configuration file.
 
