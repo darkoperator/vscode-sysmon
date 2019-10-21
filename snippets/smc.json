@@ -25,7 +25,7 @@
             "  <!-- Checking for signature revocation for drivers. -->",
             "  <CheckRevocation/>",
             "  <EventFiltering>",
-            "    ${2}          ",
+            "    ${2}",
             "  </EventFiltering>",
            "</Sysmon>"
         ],
@@ -36,7 +36,7 @@
         "prefix": "rulegroup",
         "body": [ 
             "<RuleGroup name=\"$1\" groupRelation=\"${2|and,or|}\">",
-              "${3}",
+            "  ${3}",
             "</RuleGroup>"
         ],
         "description": "Sysmon Rule Group"
@@ -693,19 +693,19 @@
     "Sysmon EventType SYSMON_CREATE_PROCESS filter set.": {
         "prefix": "!sysmon_create_process_filter_set",
         "body": [
-                   "<Image name=\"$1\"> </Image>",
-                   "<FileVersion name=\"$1\"> </FileVersion>",
-                   "<Description name=\"$1\"> </Description>",
-                   "<Product name=\"$1\"> </Product>",
-                   "<Company name=\"$1\"> </Company>",
-                   "<OriginalFileName name=\"$1\"> </OriginalFileName>",
-                   "<CommandLine name=\"$1\"> </CommandLine>",
-                   "<CurrentDirectory name=\"$1\"> </CurrentDirectory>",
-                   "<User name=\"$1\"> </User>",
-                   "<IntegrityLevel name=\"$1\"> </IntegrityLevel>",
-                   "<Hashes name=\"$1\"> </Hashes>",
-                   "<ParentImage name=\"$1\"> </ParentImage>",
-                   "<ParentCommandLine name=\"$1\"> </ParentCommandLine>"
+                   "<Image> </Image>",
+                   "<FileVersion> </FileVersion>",
+                   "<Description> </Description>",
+                   "<Product> </Product>",
+                   "<Company> </Company>",
+                   "<OriginalFileName> </OriginalFileName>",
+                   "<CommandLine> </CommandLine>",
+                   "<CurrentDirectory> </CurrentDirectory>",
+                   "<User> </User>",
+                   "<IntegrityLevel> </IntegrityLevel>",
+                   "<Hashes> </Hashes>",
+                   "<ParentImage> </ParentImage>",
+                   "<ParentCommandLine> </ParentCommandLine>"
             ],
             "description": "Sysmon sysmon_create_process EventType."
         },
@@ -713,9 +713,9 @@
     "Sysmon EventType SYSMON_FILE_TIME filter set.": {
         "prefix": "!sysmon_file_time_filter_set",
         "body": [
-                   "<Image name=\"$1\"> </Image>",
-                   "<TargetFilename name=\"$1\"> </TargetFilename>",
-                   "<PreviousCreationUtcTime name=\"$1\"> </PreviousCreationUtcTime>"
+                   "<Image> </Image>",
+                   "<TargetFilename> </TargetFilename>",
+                   "<PreviousCreationUtcTime> </PreviousCreationUtcTime>"
             ],
             "description": "Sysmon sysmon_file_time EventType."
         },
@@ -723,20 +723,20 @@
     "Sysmon EventType SYSMON_NETWORK_CONNECT filter set.": {
         "prefix": "!sysmon_network_connect_filter_set",
         "body": [
-                   "<Image name=\"$1\"> </Image>",
-                   "<User name=\"$1\"> </User>",
-                   "<Protocol name=\"$1\"> </Protocol>",
-                   "<Initiated name=\"$1\"> </Initiated>",
-                   "<SourceIsIpv6 name=\"$1\"> </SourceIsIpv6>",
-                   "<SourceIp name=\"$1\"> </SourceIp>",
-                   "<SourceHostname name=\"$1\"> </SourceHostname>",
-                   "<SourcePort name=\"$1\"> </SourcePort>",
-                   "<SourcePortName name=\"$1\"> </SourcePortName>",
-                   "<DestinationIsIpv6 name=\"$1\"> </DestinationIsIpv6>",
-                   "<DestinationIp name=\"$1\"> </DestinationIp>",
-                   "<DestinationHostname name=\"$1\"> </DestinationHostname>",
-                   "<DestinationPort name=\"$1\"> </DestinationPort>",
-                   "<DestinationPortName name=\"$1\"> </DestinationPortName>"
+                   "<Image> </Image>",
+                   "<User> </User>",
+                   "<Protocol> </Protocol>",
+                   "<Initiated> </Initiated>",
+                   "<SourceIsIpv6> </SourceIsIpv6>",
+                   "<SourceIp> </SourceIp>",
+                   "<SourceHostname> </SourceHostname>",
+                   "<SourcePort> </SourcePort>",
+                   "<SourcePortName> </SourcePortName>",
+                   "<DestinationIsIpv6> </DestinationIsIpv6>",
+                   "<DestinationIp> </DestinationIp>",
+                   "<DestinationHostname> </DestinationHostname>",
+                   "<DestinationPort> </DestinationPort>",
+                   "<DestinationPortName> </DestinationPortName>"
             ],
             "description": "Sysmon sysmon_network_connect EventType."
         },
@@ -744,7 +744,7 @@
     "Sysmon EventType SYSMON_PROCESS_TERMINATE filter set.": {
         "prefix": "!sysmon_process_terminate_filter_set",
         "body": [
-                   "<Image name=\"$1\"> </Image>"
+                   "<Image> </Image>"
             ],
             "description": "Sysmon sysmon_process_terminate EventType."
         },
@@ -752,11 +752,11 @@
     "Sysmon EventType SYSMON_DRIVER_LOAD filter set.": {
         "prefix": "!sysmon_driver_load_filter_set",
         "body": [
-                   "<ImageLoaded name=\"$1\"> </ImageLoaded>",
-                   "<Hashes name=\"$1\"> </Hashes>",
-                   "<Signed name=\"$1\"> </Signed>",
-                   "<Signature name=\"$1\"> </Signature>",
-                   "<SignatureStatus name=\"$1\"> </SignatureStatus>"
+                   "<ImageLoaded> </ImageLoaded>",
+                   "<Hashes> </Hashes>",
+                   "<Signed> </Signed>",
+                   "<Signature> </Signature>",
+                   "<SignatureStatus> </SignatureStatus>"
             ],
             "description": "Sysmon sysmon_driver_load EventType."
         },
@@ -764,17 +764,17 @@
     "Sysmon EventType SYSMON_IMAGE_LOAD filter set.": {
         "prefix": "!sysmon_image_load_filter_set",
         "body": [
-                   "<Image name=\"$1\"> </Image>",
-                   "<ImageLoaded name=\"$1\"> </ImageLoaded>",
-                   "<FileVersion name=\"$1\"> </FileVersion>",
-                   "<Description name=\"$1\"> </Description>",
-                   "<Product name=\"$1\"> </Product>",
-                   "<Company name=\"$1\"> </Company>",
-                   "<OriginalFileName name=\"$1\"> </OriginalFileName>",
-                   "<Hashes name=\"$1\"> </Hashes>",
-                   "<Signed name=\"$1\"> </Signed>",
-                   "<Signature name=\"$1\"> </Signature>",
-                   "<SignatureStatus name=\"$1\"> </SignatureStatus>"
+                   "<Image> </Image>",
+                   "<ImageLoaded> </ImageLoaded>",
+                   "<FileVersion> </FileVersion>",
+                   "<Description> </Description>",
+                   "<Product> </Product>",
+                   "<Company> </Company>",
+                   "<OriginalFileName> </OriginalFileName>",
+                   "<Hashes> </Hashes>",
+                   "<Signed> </Signed>",
+                   "<Signature> </Signature>",
+                   "<SignatureStatus> </SignatureStatus>"
             ],
             "description": "Sysmon sysmon_image_load EventType."
         },
@@ -782,11 +782,11 @@
     "Sysmon EventType SYSMON_CREATE_REMOTE_THREAD filter set.": {
         "prefix": "!sysmon_create_remote_thread_filter_set",
         "body": [
-                   "<SourceImage name=\"$1\"> </SourceImage>",
-                   "<TargetImage name=\"$1\"> </TargetImage>",
-                   "<StartAddress name=\"$1\"> </StartAddress>",
-                   "<StartModule name=\"$1\"> </StartModule>",
-                   "<StartFunction name=\"$1\"> </StartFunction>"
+                   "<SourceImage> </SourceImage>",
+                   "<TargetImage> </TargetImage>",
+                   "<StartAddress> </StartAddress>",
+                   "<StartModule> </StartModule>",
+                   "<StartFunction> </StartFunction>"
             ],
             "description": "Sysmon sysmon_create_remote_thread EventType."
         },
@@ -794,8 +794,8 @@
     "Sysmon EventType SYSMON_RAWACCESS_READ filter set.": {
         "prefix": "!sysmon_rawaccess_read_filter_set",
         "body": [
-                   "<Image name=\"$1\"> </Image>",
-                   "<Device name=\"$1\"> </Device>"
+                   "<Image> </Image>",
+                   "<Device> </Device>"
             ],
             "description": "Sysmon sysmon_rawaccess_read EventType."
         },
@@ -803,11 +803,11 @@
     "Sysmon EventType SYSMON_ACCESS_PROCESS filter set.": {
         "prefix": "!sysmon_access_process_filter_set",
         "body": [
-                   "<SourceThreadId name=\"$1\"> </SourceThreadId>",
-                   "<SourceImage name=\"$1\"> </SourceImage>",
-                   "<TargetImage name=\"$1\"> </TargetImage>",
-                   "<GrantedAccess name=\"$1\"> </GrantedAccess>",
-                   "<CallTrace name=\"$1\"> </CallTrace>"
+                   "<SourceThreadId> </SourceThreadId>",
+                   "<SourceImage> </SourceImage>",
+                   "<TargetImage> </TargetImage>",
+                   "<GrantedAccess> </GrantedAccess>",
+                   "<CallTrace> </CallTrace>"
             ],
             "description": "Sysmon sysmon_access_process EventType."
         },
@@ -815,8 +815,8 @@
     "Sysmon EventType SYSMON_FILE_CREATE filter set.": {
         "prefix": "!sysmon_file_create_filter_set",
         "body": [
-                   "<Image name=\"$1\"> </Image>",
-                   "<TargetFilename name=\"$1\"> </TargetFilename>"
+                   "<Image> </Image>",
+                   "<TargetFilename> </TargetFilename>"
             ],
             "description": "Sysmon sysmon_file_create EventType."
         },
@@ -824,9 +824,9 @@
     "Sysmon EventType SYSMON_REG_KEY filter set.": {
         "prefix": "!sysmon_reg_key_filter_set",
         "body": [
-                   "<EventType name=\"$1\"> </EventType>",
-                   "<Image name=\"$1\"> </Image>",
-                   "<TargetObject name=\"$1\"> </TargetObject>"
+                   "<EventType> </EventType>",
+                   "<Image> </Image>",
+                   "<TargetObject> </TargetObject>"
             ],
             "description": "Sysmon sysmon_reg_key EventType."
         },
@@ -834,10 +834,10 @@
     "Sysmon EventType SYSMON_REG_SETVALUE filter set.": {
         "prefix": "!sysmon_reg_setvalue_filter_set",
         "body": [
-                   "<EventType name=\"$1\"> </EventType>",
-                   "<Image name=\"$1\"> </Image>",
-                   "<TargetObject name=\"$1\"> </TargetObject>",
-                   "<Details name=\"$1\"> </Details>"
+                   "<EventType> </EventType>",
+                   "<Image> </Image>",
+                   "<TargetObject> </TargetObject>",
+                   "<Details> </Details>"
             ],
             "description": "Sysmon sysmon_reg_setvalue EventType."
         },
@@ -845,10 +845,10 @@
     "Sysmon EventType SYSMON_REG_NAME filter set.": {
         "prefix": "!sysmon_reg_name_filter_set",
         "body": [
-                   "<EventType name=\"$1\"> </EventType>",
-                   "<Image name=\"$1\"> </Image>",
-                   "<TargetObject name=\"$1\"> </TargetObject>",
-                   "<NewName name=\"$1\"> </NewName>"
+                   "<EventType> </EventType>",
+                   "<Image> </Image>",
+                   "<TargetObject> </TargetObject>",
+                   "<NewName> </NewName>"
             ],
             "description": "Sysmon sysmon_reg_name EventType."
         },
@@ -856,9 +856,9 @@
     "Sysmon EventType SYSMON_FILE_CREATE_STREAM_HASH filter set.": {
         "prefix": "!sysmon_file_create_stream_hash_filter_set",
         "body": [
-                   "<Image name=\"$1\"> </Image>",
-                   "<TargetFilename name=\"$1\"> </TargetFilename>",
-                   "<Hash name=\"$1\"> </Hash>"
+                   "<Image> </Image>",
+                   "<TargetFilename> </TargetFilename>",
+                   "<Hash> </Hash>"
             ],
             "description": "Sysmon sysmon_file_create_stream_hash EventType."
         },
@@ -866,9 +866,9 @@
     "Sysmon EventType SYSMON_CREATE_NAMEDPIPE filter set.": {
         "prefix": "!sysmon_create_namedpipe_filter_set",
         "body": [
-                   "<EventType name=\"$1\"> </EventType>",
-                   "<PipeName name=\"$1\"> </PipeName>",
-                   "<Image name=\"$1\"> </Image>"
+                   "<EventType> </EventType>",
+                   "<PipeName> </PipeName>",
+                   "<Image> </Image>"
             ],
             "description": "Sysmon sysmon_create_namedpipe EventType."
         },
@@ -876,9 +876,9 @@
     "Sysmon EventType SYSMON_CONNECT_NAMEDPIPE filter set.": {
         "prefix": "!sysmon_connect_namedpipe_filter_set",
         "body": [
-                   "<EventType name=\"$1\"> </EventType>",
-                   "<PipeName name=\"$1\"> </PipeName>",
-                   "<Image name=\"$1\"> </Image>"
+                   "<EventType> </EventType>",
+                   "<PipeName> </PipeName>",
+                   "<Image> </Image>"
             ],
             "description": "Sysmon sysmon_connect_namedpipe EventType."
         },
@@ -886,12 +886,12 @@
     "Sysmon EventType SYSMON_WMI_FILTER filter set.": {
         "prefix": "!sysmon_wmi_filter_filter_set",
         "body": [
-                   "<EventType name=\"$1\"> </EventType>",
-                   "<Operation name=\"$1\"> </Operation>",
-                   "<User name=\"$1\"> </User>",
-                   "<EventNamespace name=\"$1\"> </EventNamespace>",
-                   "<Name name=\"$1\"> </Name>",
-                   "<Query name=\"$1\"> </Query>"
+                   "<EventType> </EventType>",
+                   "<Operation> </Operation>",
+                   "<User> </User>",
+                   "<EventNamespace> </EventNamespace>",
+                   "<Name> </Name>",
+                   "<Query> </Query>"
             ],
             "description": "Sysmon sysmon_wmi_filter EventType."
         },
@@ -899,12 +899,12 @@
     "Sysmon EventType SYSMON_WMI_CONSUMER filter set.": {
         "prefix": "!sysmon_wmi_consumer_filter_set",
         "body": [
-                   "<EventType name=\"$1\"> </EventType>",
-                   "<Operation name=\"$1\"> </Operation>",
-                   "<User name=\"$1\"> </User>",
-                   "<Name name=\"$1\"> </Name>",
-                   "<Type name=\"$1\"> </Type>",
-                   "<Destination name=\"$1\"> </Destination>"
+                   "<EventType> </EventType>",
+                   "<Operation> </Operation>",
+                   "<User> </User>",
+                   "<Name> </Name>",
+                   "<Type> </Type>",
+                   "<Destination> </Destination>"
             ],
             "description": "Sysmon sysmon_wmi_consumer EventType."
         },
@@ -912,11 +912,11 @@
     "Sysmon EventType SYSMON_WMI_BINDING filter set.": {
         "prefix": "!sysmon_wmi_binding_filter_set",
         "body": [
-                   "<EventType name=\"$1\"> </EventType>",
-                   "<Operation name=\"$1\"> </Operation>",
-                   "<User name=\"$1\"> </User>",
-                   "<Consumer name=\"$1\"> </Consumer>",
-                   "<Filter name=\"$1\"> </Filter>"
+                   "<EventType> </EventType>",
+                   "<Operation> </Operation>",
+                   "<User> </User>",
+                   "<Consumer> </Consumer>",
+                   "<Filter> </Filter>"
             ],
             "description": "Sysmon sysmon_wmi_binding EventType."
         },
@@ -924,10 +924,10 @@
     "Sysmon EventType SYSMON_DNS_QUERY filter set.": {
         "prefix": "!sysmon_dns_query_filter_set",
         "body": [
-                   "<QueryName name=\"$1\"> </QueryName>",
-                   "<QueryStatus name=\"$1\"> </QueryStatus>",
-                   "<QueryResults name=\"$1\"> </QueryResults>",
-                   "<Image name=\"$1\"> </Image>"
+                   "<QueryName> </QueryName>",
+                   "<QueryStatus> </QueryStatus>",
+                   "<QueryResults> </QueryResults>",
+                   "<Image> </Image>"
             ],
             "description": "Sysmon sysmon_dns_query EventType."
         }
