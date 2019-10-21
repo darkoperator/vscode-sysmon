@@ -56,5 +56,21 @@
 		"typescript": "^3.3.1",
 		"tslint": "^5.12.1",
 		"vscode-test": "^1.2.0"
+	},
+	"license": "SEE LICENSE IN LICENSE.txt",
+	"bugs": {
+		"url": "https://github.com/darkoperator/vscode-sysmon/issues",
+		"email": "carlos_perez@darkoperator.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/darkoperator/vscode-sysmon.git"
+	},
+	"homepage": "https://github.com/darkoperator/vscode-sysmon/blob/master/README.md",
+
+	"icon": "images/icon.png",
+	"galleryBanner": {
+		"color": "#ACD1EC",
+		"theme": "light"
 	}
 }

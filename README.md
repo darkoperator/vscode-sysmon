@@ -126,16 +126,16 @@ When working with Rule elements in the config where he order of the field play a
 | !sysmon_wmi_binding_filter_set | Sysmon EventType SYSMON_WMI_BINDING filter set. |
 | !sysmon_dns_query_filter_set | Sysmon EventType SYSMON_DNS_QUERY filter set. |
 
-## Requirements
-
-No requirements.
-
-## Known Issues
-
-No Known issues at time of release.
-
 ## Release Notes
 
 ### 1.0.0
 
 Initial release.
+
+## Questions, issues, feature requests, and contributions
+
+* If you come across a problem with the extension, please [file an issue](https://github.com/darkoperator/vscode-sysmon)
+* Contributions are always welcome!
+* Any and all feedback is appreciated and welcome!
+  * If someone has already [filed an issue](https://github.com/darkoperator/vscode-sysmon) that encompasses your feedback, please leave a 👍/👎 reaction on the issue
+  * Otherwise please file a new issue
