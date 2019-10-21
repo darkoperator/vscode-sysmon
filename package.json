@@ -72,5 +72,7 @@
 	"galleryBanner": {
 		"color": "#ACD1EC",
 		"theme": "light"
-	}
+	},
+
+	"publisher": "DarkOperator"
 }
