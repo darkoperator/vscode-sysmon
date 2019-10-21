@@ -10,7 +10,8 @@ This extensions offers a series of snippets for helping in building a Microsofty
 
 Change the language to Sysmon on a existing XML file or use the extension ".smc".
 
-<img src=https://raw.githubusercontent.com/darkoperator/vscode-sysmon/master/images/setlang.gif>
+![Set Language to Sysmon](https://raw.githubusercontent.com/darkoperator/vscode-sysmon/master/images/setlang.gif)
+
 
 ### Snippets
 
