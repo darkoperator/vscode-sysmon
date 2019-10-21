@@ -6,21 +6,55 @@ import * as vscode from 'vscode';
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "sysmon" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('extension.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
+	const conditionops = vscode.languages.registerCompletionItemProvider(
+		'smc',
+		{
+			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+				let linePrefix = document.lineAt(position).text.substr(0, position.character);
+				if (!linePrefix.endsWith('condition="')) {
+					return undefined;
+				}
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World!');
-	});
+				return [
+					// is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image
+					new vscode.CompletionItem('is', vscode.CompletionItemKind.Method),
+					new vscode.CompletionItem('is not', vscode.CompletionItemKind.Method),
+					new vscode.CompletionItem('contains', vscode.CompletionItemKind.Method),
+					new vscode.CompletionItem('contains any', vscode.CompletionItemKind.Method),
+					new vscode.CompletionItem('contains all', vscode.CompletionItemKind.Method),
+					new vscode.CompletionItem('excludes', vscode.CompletionItemKind.Method),
+					new vscode.CompletionItem('begin with', vscode.CompletionItemKind.Method),
+					new vscode.CompletionItem('end with', vscode.CompletionItemKind.Method),
+					new vscode.CompletionItem('less than', vscode.CompletionItemKind.Method),
+					new vscode.CompletionItem('more than', vscode.CompletionItemKind.Method),
+					new vscode.CompletionItem('image', vscode.CompletionItemKind.Method),
+				];
+			}
+		},
+		'"' // triggered whenever a '=' is being typed
+	);
 
-	context.subscriptions.push(disposable);
+	const onmatch = vscode.languages.registerCompletionItemProvider(
+		'smc',
+		{
+			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+				let linePrefix = document.lineAt(position).text.substr(0, position.character);
+				if (!linePrefix.endsWith('onmatch="')) {
+					return undefined;
+				}
+
+				return [
+					// is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image
+					new vscode.CompletionItem('include', vscode.CompletionItemKind.Method),
+					new vscode.CompletionItem('exclude', vscode.CompletionItemKind.Method),
+				];
+			}
+		},
+		'"' // triggered whenever a '=' is being typed
+	);
+
+	context.subscriptions.push(conditionops,onmatch);
 }
 
 // this method is called when your extension is deactivated

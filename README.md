@@ -1,65 +1,141 @@
-# sysmon README
+# Sysmon
 
-This is the README for your extension "sysmon". After writing up a brief description, we recommend including the following sections.
+This Visual Studio Code extension is for heping in the writting of Sysmon XML configuration files.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+This extensions offers a series of snippets for helping in building a Microsofty Sysinternals Sysmon XML configuration. The extension is based on the 4.22 version of the Sysinternals Sysmon schema. It also provide automatic closing of element tags for the filter fields.
 
-For example if there is an image subfolder under your extension project workspace:
+### Snippets
 
-\!\[feature X\]\(images/feature-x.png\)
+General snippets for the building of the initial structure of the configuration file.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+| Name     | Description     |
+|----------|-----------------|
+| comment | Sysmon Comment |
+| sysmon_config | Template Sysmon Config |
+| rulegroup | Sysmon RuleGroup |
+| rule | Sysmon Rule |
+| condition | Filter condition operator used |
+
+Snippets for each of the individual filters available in the schema with the exception of the run time unique ones that one would not filter on like ProcessID, UTC Time, Sysmon system unique GUIDs and others. 
+
+| Name     | Description     |
+|----------|-----------------|
+| !ProcessCreate | Sysmon EventType ProcessCreate |
+| !FileCreateTime | Sysmon EventType FileCreateTime |
+| !NetworkConnect | Sysmon EventType NetworkConnect |
+| !ProcessTerminate | Sysmon EventType ProcessTerminate |
+| !DriverLoad | Sysmon EventType DriverLoad |
+| !ImageLoad | Sysmon EventType ImageLoad |
+| !CreateRemoteThread | Sysmon EventType CreateRemoteThread |
+| !RawAccessRead | Sysmon EventType RawAccessRead |
+| !ProcessAccess | Sysmon EventType ProcessAccess |
+| !FileCreate | Sysmon EventType FileCreate |
+| !RegistryEvent | Sysmon EventType RegistryEvent |
+| !FileCreateStreamHash | Sysmon EventType FileCreateStreamHash |
+| !PipeEvent | Sysmon EventType PipeEvent |
+| !WmiEvent | Sysmon EventType WmiEvent |
+| !DnsQuery | Sysmon EventType DnsQuery |
+| !CallTrace | Sysmon event field CallTrace filter |
+| !CommandLine | Sysmon event field CommandLine filter |
+| !Company | Sysmon event field Company filter |
+| !Configuration | Sysmon event field Configuration filter |
+| !ConfigurationFileHash | Sysmon event field ConfigurationFileHash filter |
+| !Consumer | Sysmon event field Consumer filter |
+| !CurrentDirectory | Sysmon event field CurrentDirectory filter |
+| !Description | Sysmon event field Description filter |
+| !Destination | Sysmon event field Destination filter |
+| !DestinationHostname | Sysmon event field DestinationHostname filter |
+| !DestinationIp | Sysmon event field DestinationIp filter |
+| !DestinationIsIpv6 | Sysmon event field DestinationIsIpv6 filter |
+| !DestinationPort | Sysmon event field DestinationPort filter |
+| !DestinationPortName | Sysmon event field DestinationPortName filter |
+| !Details | Sysmon event field Details filter |
+| !Device | Sysmon event field Device filter |
+| !EventNamespace | Sysmon event field EventNamespace filter |
+| !EventType | Sysmon event field EventType filter |
+| !FileVersion | Sysmon event field FileVersion filter |
+| !Filter | Sysmon event field Filter filter |
+| !GrantedAccess | Sysmon event field GrantedAccess filter |
+| !Hash | Sysmon event field Hash filter |
+| !Hashes | Sysmon event field Hashes filter |
+| !ID | Sysmon event field ID filter |
+| !Image | Sysmon event field Image filter |
+| !ImageLoaded | Sysmon event field ImageLoaded filter |
+| !Initiated | Sysmon event field Initiated filter |
+| !IntegrityLevel | Sysmon event field IntegrityLevel filter |
+| !Name | Sysmon event field Name filter |
+| !NewName | Sysmon event field NewName filter |
+| !Operation | Sysmon event field Operation filter |
+| !OriginalFileName | Sysmon event field OriginalFileName filter |
+| !ParentCommandLine | Sysmon event field ParentCommandLine filter |
+| !ParentImage | Sysmon event field ParentImage filter |
+| !PipeName | Sysmon event field PipeName filter |
+| !PreviousCreationUtcTime | Sysmon event field PreviousCreationUtcTime filter |
+| !Product | Sysmon event field Product filter |
+| !Protocol | Sysmon event field Protocol filter |
+| !Query | Sysmon event field Query filter |
+| !QueryName | Sysmon event field QueryName filter |
+| !QueryResults | Sysmon event field QueryResults filter |
+| !QueryStatus | Sysmon event field QueryStatus filter |
+| !SchemaVersion | Sysmon event field SchemaVersion filter |
+| !Signature | Sysmon event field Signature filter |
+| !SignatureStatus | Sysmon event field SignatureStatus filter |
+| !Signed | Sysmon event field Signed filter |
+| !SourceHostname | Sysmon event field SourceHostname filter |
+| !SourceImage | Sysmon event field SourceImage filter |
+| !SourceIp | Sysmon event field SourceIp filter |
+| !SourceIsIpv6 | Sysmon event field SourceIsIpv6 filter |
+| !SourcePort | Sysmon event field SourcePort filter |
+| !SourcePortName | Sysmon event field SourcePortName filter |
+| !SourceThreadId | Sysmon event field SourceThreadId filter |
+| !StartAddress | Sysmon event field StartAddress filter |
+| !StartFunction | Sysmon event field StartFunction filter |
+| !StartModule | Sysmon event field StartModule filter |
+| !State | Sysmon event field State filter |
+| !TargetFilename | Sysmon event field TargetFilename filter |
+| !TargetImage | Sysmon event field TargetImage filter |
+| !TargetObject | Sysmon event field TargetObject filter |
+| !Type | Sysmon event field Type filter |
+| !User | Sysmon event field User filter |
+| !Version | Sysmon event field Version filter |
+
+When working with Rule elements in the config where he order of the field play an important role these snippets will put all fileds one would filter on in the order as they appear in the schema. Each with positions set for the name and the condition with a option set to make it easier to select.
+
+| Name     | Description     |
+|----------|-----------------|
+| !sysmon_create_process_filter_set | Sysmon EventType SYSMON_CREATE_PROCESS filter set. |
+| !sysmon_file_time_filter_set | Sysmon EventType SYSMON_FILE_TIME filter set. |
+| !sysmon_network_connect_filter_set | Sysmon EventType SYSMON_NETWORK_CONNECT filter set. |
+| !sysmon_process_terminate_filter_set | Sysmon EventType SYSMON_PROCESS_TERMINATE filter set. |
+| !sysmon_driver_load_filter_set | Sysmon EventType SYSMON_DRIVER_LOAD filter set. |
+| !sysmon_image_load_filter_set | Sysmon EventType SYSMON_IMAGE_LOAD filter set. |
+| !sysmon_create_remote_thread_filter_set | Sysmon EventType SYSMON_CREATE_REMOTE_THREAD filter set. |
+| !sysmon_rawaccess_read_filter_set | Sysmon EventType SYSMON_RAWACCESS_READ filter set. |
+| !sysmon_access_process_filter_set | Sysmon EventType SYSMON_ACCESS_PROCESS filter set. |
+| !sysmon_file_create_filter_set | Sysmon EventType SYSMON_FILE_CREATE filter set. |
+| !sysmon_reg_key_filter_set | Sysmon EventType SYSMON_REG_KEY filter set. |
+| !sysmon_reg_setvalue_filter_set | Sysmon EventType SYSMON_REG_SETVALUE filter set. |
+| !sysmon_reg_name_filter_set | Sysmon EventType SYSMON_REG_NAME filter set. |
+| !sysmon_file_create_stream_hash_filter_set | Sysmon EventType SYSMON_FILE_CREATE_STREAM_HASH filter set. |
+| !sysmon_create_namedpipe_filter_set | Sysmon EventType SYSMON_CREATE_NAMEDPIPE filter set. |
+| !sysmon_connect_namedpipe_filter_set | Sysmon EventType SYSMON_CONNECT_NAMEDPIPE filter set. |
+| !sysmon_wmi_filter_filter_set | Sysmon EventType SYSMON_WMI_FILTER filter set. |
+| !sysmon_wmi_consumer_filter_set | Sysmon EventType SYSMON_WMI_CONSUMER filter set. |
+| !sysmon_wmi_binding_filter_set | Sysmon EventType SYSMON_WMI_BINDING filter set. |
+| !sysmon_dns_query_filter_set | Sysmon EventType SYSMON_DNS_QUERY filter set. |
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+No requirements.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+No Known issues at time of release.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Initial release.
