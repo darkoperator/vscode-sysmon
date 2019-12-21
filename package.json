@@ -2,14 +2,14 @@
 	"name": "sysmon",
 	"displayName": "Sysmon",
 	"description": "Microsoft Sysinternals Sysmon Configuration file authoring extension.",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"engines": {
 		"vscode": "^1.39.0"
 	},
 	"categories": [
 		"Other",
 		"Programming Languages",
-    	"Snippets"
+		"Snippets"
 	],
 	"activationEvents": [
 		"*"
@@ -22,22 +22,33 @@
 				"title": "Hello World"
 			}
 		],
-		"snippets": [{
-			"language": "smc",
-			"path": "./snippets/smc.json"
-		}],
-
-		"languages": [{
-            "id": "smc",
-            "aliases": ["Sysmon", "smc"],
-            "extensions": ["smc", "xml"],
-            "configuration": "./language-configuration.json"
-		}],
-		"grammars": [{
-            "language": "smc",
-            "scopeName": "source.sysmon",
-            "path": "./syntaxes/smc.tmLanguage.json"
-        }]
+		"snippets": [
+			{
+				"language": "smc",
+				"path": "./snippets/smc.json"
+			}
+		],
+		"languages": [
+			{
+				"id": "smc",
+				"aliases": [
+					"Sysmon",
+					"smc"
+				],
+				"extensions": [
+					"smc",
+					"xml"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "smc",
+				"scopeName": "source.sysmon",
+				"path": "./syntaxes/smc.tmLanguage.json"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -67,12 +78,15 @@
 		"url": "https://github.com/darkoperator/vscode-sysmon.git"
 	},
 	"homepage": "https://github.com/darkoperator/vscode-sysmon/blob/master/README.md",
-
 	"icon": "images/icon.png",
 	"galleryBanner": {
 		"color": "#ACD1EC",
 		"theme": "light"
 	},
-
-	"publisher": "DarkOperator"
+	"publisher": "DarkOperator",
+	"__metadata": {
+		"id": "0b631589-0c5b-445d-aeab-c1bda6b98946",
+		"publisherDisplayName": "DarkOperator",
+		"publisherId": "84336c4a-0cf5-4d58-b3c0-072b41cacc30"
+	}
 }

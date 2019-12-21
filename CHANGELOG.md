@@ -1,9 +1,12 @@
 # Change Log
 
-All notable changes to the "sysmon" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
+## [1.0.0]
 
 - Initial release
+
+## [1.1.0] - 2019-12-21
+
+### Added
+
+- Support for specifying 4.23 schema.
+- Added new operators in the 4.23 schema (excludes all, excludes any)

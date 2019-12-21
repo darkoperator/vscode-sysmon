@@ -10,7 +10,7 @@
     "Sysmon condition": {
         "prefix": "condition",
         "body": [
-            "condition=\"${1|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\""
+            "condition=\"${1|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\""
         ],
         "description": "Sysmon event field Company filter."
     },
@@ -18,7 +18,7 @@
     "Template Sysmon Config": {
         "prefix": "sysmon_config",
         "body": [ 
-            "<Sysmon schemaversion=\"4.22\">",
+            "<Sysmon schemaversion=\"${1|4.22,4.23|}\">",
             "  <!-- Hashing algorithms that can be used are md5,sha1,sha256,imphash or * for all,", 
             "  more than once can be specified separated by using comas -->",
             "  <HashAlgorithms>${1|md5,sha1,sha256,imphash,*|}</HashAlgorithms>",
@@ -205,7 +205,7 @@
     "Sysmon event field CallTrace filter": {
         "prefix": "!CallTrace",
         "body": [
-            "<CallTrace name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</CallTrace>"
+            "<CallTrace name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</CallTrace>"
         ],
         "description": "Sysmon event field CallTrace filter."
     },
@@ -213,7 +213,7 @@
     "Sysmon event field CommandLine filter": {
         "prefix": "!CommandLine",
         "body": [
-            "<CommandLine name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</CommandLine>"
+            "<CommandLine name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</CommandLine>"
         ],
         "description": "Sysmon event field CommandLine filter."
     },
@@ -221,7 +221,7 @@
     "Sysmon event field Company filter": {
         "prefix": "!Company",
         "body": [
-            "<Company name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Company>"
+            "<Company name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Company>"
         ],
         "description": "Sysmon event field Company filter."
     },
@@ -229,7 +229,7 @@
     "Sysmon event field Consumer filter": {
         "prefix": "!Consumer",
         "body": [
-            "<Consumer name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Consumer>"
+            "<Consumer name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Consumer>"
         ],
         "description": "Sysmon event field Consumer filter."
     },
@@ -237,7 +237,7 @@
     "Sysmon event field CurrentDirectory filter": {
         "prefix": "!CurrentDirectory",
         "body": [
-            "<CurrentDirectory name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</CurrentDirectory>"
+            "<CurrentDirectory name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</CurrentDirectory>"
         ],
         "description": "Sysmon event field CurrentDirectory filter."
     },
@@ -245,7 +245,7 @@
     "Sysmon event field Description filter": {
         "prefix": "!Description",
         "body": [
-            "<Description name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Description>"
+            "<Description name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Description>"
         ],
         "description": "Sysmon event field Description filter."
     },
@@ -253,7 +253,7 @@
     "Sysmon event field Destination filter": {
         "prefix": "!Destination",
         "body": [
-            "<Destination name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Destination>"
+            "<Destination name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Destination>"
         ],
         "description": "Sysmon event field Destination filter."
     },
@@ -261,7 +261,7 @@
     "Sysmon event field DestinationHostname filter": {
         "prefix": "!DestinationHostname",
         "body": [
-            "<DestinationHostname name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</DestinationHostname>"
+            "<DestinationHostname name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</DestinationHostname>"
         ],
         "description": "Sysmon event field DestinationHostname filter."
     },
@@ -269,7 +269,7 @@
     "Sysmon event field DestinationIp filter": {
         "prefix": "!DestinationIp",
         "body": [
-            "<DestinationIp name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</DestinationIp>"
+            "<DestinationIp name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</DestinationIp>"
         ],
         "description": "Sysmon event field DestinationIp filter."
     },
@@ -277,7 +277,7 @@
     "Sysmon event field DestinationIsIpv6 filter": {
         "prefix": "!DestinationIsIpv6",
         "body": [
-            "<DestinationIsIpv6 name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</DestinationIsIpv6>"
+            "<DestinationIsIpv6 name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</DestinationIsIpv6>"
         ],
         "description": "Sysmon event field DestinationIsIpv6 filter."
     },
@@ -285,7 +285,7 @@
     "Sysmon event field DestinationPort filter": {
         "prefix": "!DestinationPort",
         "body": [
-            "<DestinationPort name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</DestinationPort>"
+            "<DestinationPort name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</DestinationPort>"
         ],
         "description": "Sysmon event field DestinationPort filter."
     },
@@ -293,7 +293,7 @@
     "Sysmon event field DestinationPortName filter": {
         "prefix": "!DestinationPortName",
         "body": [
-            "<DestinationPortName name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</DestinationPortName>"
+            "<DestinationPortName name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</DestinationPortName>"
         ],
         "description": "Sysmon event field DestinationPortName filter."
     },
@@ -301,7 +301,7 @@
     "Sysmon event field Details filter": {
         "prefix": "!Details",
         "body": [
-            "<Details name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Details>"
+            "<Details name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Details>"
         ],
         "description": "Sysmon event field Details filter."
     },
@@ -309,7 +309,7 @@
     "Sysmon event field Device filter": {
         "prefix": "!Device",
         "body": [
-            "<Device name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Device>"
+            "<Device name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Device>"
         ],
         "description": "Sysmon event field Device filter."
     },
@@ -317,7 +317,7 @@
     "Sysmon event field EventNamespace filter": {
         "prefix": "!EventNamespace",
         "body": [
-            "<EventNamespace name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</EventNamespace>"
+            "<EventNamespace name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</EventNamespace>"
         ],
         "description": "Sysmon event field EventNamespace filter."
     },
@@ -325,7 +325,7 @@
     "Sysmon event field EventType filter": {
         "prefix": "!EventType",
         "body": [
-            "<EventType name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</EventType>"
+            "<EventType name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</EventType>"
         ],
         "description": "Sysmon event field EventType filter."
     },
@@ -333,7 +333,7 @@
     "Sysmon event field FileVersion filter": {
         "prefix": "!FileVersion",
         "body": [
-            "<FileVersion name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</FileVersion>"
+            "<FileVersion name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</FileVersion>"
         ],
         "description": "Sysmon event field FileVersion filter."
     },
@@ -341,7 +341,7 @@
     "Sysmon event field Filter filter": {
         "prefix": "!Filter",
         "body": [
-            "<Filter name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Filter>"
+            "<Filter name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Filter>"
         ],
         "description": "Sysmon event field Filter filter."
     },
@@ -349,7 +349,7 @@
     "Sysmon event field GrantedAccess filter": {
         "prefix": "!GrantedAccess",
         "body": [
-            "<GrantedAccess name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</GrantedAccess>"
+            "<GrantedAccess name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</GrantedAccess>"
         ],
         "description": "Sysmon event field GrantedAccess filter."
     },
@@ -357,7 +357,7 @@
     "Sysmon event field Hash filter": {
         "prefix": "!Hash",
         "body": [
-            "<Hash name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Hash>"
+            "<Hash name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Hash>"
         ],
         "description": "Sysmon event field Hash filter."
     },
@@ -365,7 +365,7 @@
     "Sysmon event field Hashes filter": {
         "prefix": "!Hashes",
         "body": [
-            "<Hashes name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Hashes>"
+            "<Hashes name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Hashes>"
         ],
         "description": "Sysmon event field Hashes filter."
     },
@@ -373,7 +373,7 @@
     "Sysmon event field ID filter": {
         "prefix": "!ID",
         "body": [
-            "<ID name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</ID>"
+            "<ID name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</ID>"
         ],
         "description": "Sysmon event field ID filter."
     },
@@ -381,7 +381,7 @@
     "Sysmon event field Image filter": {
         "prefix": "!Image",
         "body": [
-            "<Image name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Image>"
+            "<Image name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Image>"
         ],
         "description": "Sysmon event field Image filter."
     },
@@ -389,7 +389,7 @@
     "Sysmon event field ImageLoaded filter": {
         "prefix": "!ImageLoaded",
         "body": [
-            "<ImageLoaded name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</ImageLoaded>"
+            "<ImageLoaded name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</ImageLoaded>"
         ],
         "description": "Sysmon event field ImageLoaded filter."
     },
@@ -397,7 +397,7 @@
     "Sysmon event field Initiated filter": {
         "prefix": "!Initiated",
         "body": [
-            "<Initiated name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Initiated>"
+            "<Initiated name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Initiated>"
         ],
         "description": "Sysmon event field Initiated filter."
     },
@@ -405,7 +405,7 @@
     "Sysmon event field IntegrityLevel filter": {
         "prefix": "!IntegrityLevel",
         "body": [
-            "<IntegrityLevel name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</IntegrityLevel>"
+            "<IntegrityLevel name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</IntegrityLevel>"
         ],
         "description": "Sysmon event field IntegrityLevel filter."
     },
@@ -413,7 +413,7 @@
     "Sysmon event field Name filter": {
         "prefix": "!Name",
         "body": [
-            "<Name name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Name>"
+            "<Name name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Name>"
         ],
         "description": "Sysmon event field Name filter."
     },
@@ -421,7 +421,7 @@
     "Sysmon event field NewName filter": {
         "prefix": "!NewName",
         "body": [
-            "<NewName name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</NewName>"
+            "<NewName name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</NewName>"
         ],
         "description": "Sysmon event field NewName filter."
     },
@@ -429,7 +429,7 @@
     "Sysmon event field Operation filter": {
         "prefix": "!Operation",
         "body": [
-            "<Operation name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Operation>"
+            "<Operation name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Operation>"
         ],
         "description": "Sysmon event field Operation filter."
     },
@@ -437,7 +437,7 @@
     "Sysmon event field OriginalFileName filter": {
         "prefix": "!OriginalFileName",
         "body": [
-            "<OriginalFileName name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</OriginalFileName>"
+            "<OriginalFileName name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</OriginalFileName>"
         ],
         "description": "Sysmon event field OriginalFileName filter."
     },
@@ -445,7 +445,7 @@
     "Sysmon event field ParentCommandLine filter": {
         "prefix": "!ParentCommandLine",
         "body": [
-            "<ParentCommandLine name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</ParentCommandLine>"
+            "<ParentCommandLine name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</ParentCommandLine>"
         ],
         "description": "Sysmon event field ParentCommandLine filter."
     },
@@ -453,7 +453,7 @@
     "Sysmon event field ParentImage filter": {
         "prefix": "!ParentImage",
         "body": [
-            "<ParentImage name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</ParentImage>"
+            "<ParentImage name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</ParentImage>"
         ],
         "description": "Sysmon event field ParentImage filter."
     },
@@ -461,7 +461,7 @@
     "Sysmon event field PipeName filter": {
         "prefix": "!PipeName",
         "body": [
-            "<PipeName name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</PipeName>"
+            "<PipeName name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</PipeName>"
         ],
         "description": "Sysmon event field PipeName filter."
     },
@@ -469,7 +469,7 @@
     "Sysmon event field PreviousCreationUtcTime filter": {
         "prefix": "!PreviousCreationUtcTime",
         "body": [
-            "<PreviousCreationUtcTime name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</PreviousCreationUtcTime>"
+            "<PreviousCreationUtcTime name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</PreviousCreationUtcTime>"
         ],
         "description": "Sysmon event field PreviousCreationUtcTime filter."
     },
@@ -477,7 +477,7 @@
     "Sysmon event field Product filter": {
         "prefix": "!Product",
         "body": [
-            "<Product name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Product>"
+            "<Product name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Product>"
         ],
         "description": "Sysmon event field Product filter."
     },
@@ -485,7 +485,7 @@
     "Sysmon event field Protocol filter": {
         "prefix": "!Protocol",
         "body": [
-            "<Protocol name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Protocol>"
+            "<Protocol name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Protocol>"
         ],
         "description": "Sysmon event field Protocol filter."
     },
@@ -493,7 +493,7 @@
     "Sysmon event field Query filter": {
         "prefix": "!Query",
         "body": [
-            "<Query name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Query>"
+            "<Query name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Query>"
         ],
         "description": "Sysmon event field Query filter."
     },
@@ -501,7 +501,7 @@
     "Sysmon event field QueryName filter": {
         "prefix": "!QueryName",
         "body": [
-            "<QueryName name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</QueryName>"
+            "<QueryName name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</QueryName>"
         ],
         "description": "Sysmon event field QueryName filter."
     },
@@ -509,7 +509,7 @@
     "Sysmon event field QueryResults filter": {
         "prefix": "!QueryResults",
         "body": [
-            "<QueryResults name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</QueryResults>"
+            "<QueryResults name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</QueryResults>"
         ],
         "description": "Sysmon event field QueryResults filter."
     },
@@ -517,7 +517,7 @@
     "Sysmon event field QueryStatus filter": {
         "prefix": "!QueryStatus",
         "body": [
-            "<QueryStatus name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</QueryStatus>"
+            "<QueryStatus name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</QueryStatus>"
         ],
         "description": "Sysmon event field QueryStatus filter."
     },
@@ -525,7 +525,7 @@
     "Sysmon event field SchemaVersion filter": {
         "prefix": "!SchemaVersion",
         "body": [
-            "<SchemaVersion name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</SchemaVersion>"
+            "<SchemaVersion name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</SchemaVersion>"
         ],
         "description": "Sysmon event field SchemaVersion filter."
     },
@@ -533,7 +533,7 @@
     "Sysmon event field Signature filter": {
         "prefix": "!Signature",
         "body": [
-            "<Signature name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Signature>"
+            "<Signature name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Signature>"
         ],
         "description": "Sysmon event field Signature filter."
     },
@@ -541,7 +541,7 @@
     "Sysmon event field SignatureStatus filter": {
         "prefix": "!SignatureStatus",
         "body": [
-            "<SignatureStatus name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</SignatureStatus>"
+            "<SignatureStatus name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</SignatureStatus>"
         ],
         "description": "Sysmon event field SignatureStatus filter."
     },
@@ -549,7 +549,7 @@
     "Sysmon event field Signed filter": {
         "prefix": "!Signed",
         "body": [
-            "<Signed name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Signed>"
+            "<Signed name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Signed>"
         ],
         "description": "Sysmon event field Signed filter."
     },
@@ -557,7 +557,7 @@
     "Sysmon event field SourceHostname filter": {
         "prefix": "!SourceHostname",
         "body": [
-            "<SourceHostname name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</SourceHostname>"
+            "<SourceHostname name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</SourceHostname>"
         ],
         "description": "Sysmon event field SourceHostname filter."
     },
@@ -565,7 +565,7 @@
     "Sysmon event field SourceImage filter": {
         "prefix": "!SourceImage",
         "body": [
-            "<SourceImage name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</SourceImage>"
+            "<SourceImage name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</SourceImage>"
         ],
         "description": "Sysmon event field SourceImage filter."
     },
@@ -573,7 +573,7 @@
     "Sysmon event field SourceIp filter": {
         "prefix": "!SourceIp",
         "body": [
-            "<SourceIp name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</SourceIp>"
+            "<SourceIp name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</SourceIp>"
         ],
         "description": "Sysmon event field SourceIp filter."
     },
@@ -581,7 +581,7 @@
     "Sysmon event field SourceIsIpv6 filter": {
         "prefix": "!SourceIsIpv6",
         "body": [
-            "<SourceIsIpv6 name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</SourceIsIpv6>"
+            "<SourceIsIpv6 name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</SourceIsIpv6>"
         ],
         "description": "Sysmon event field SourceIsIpv6 filter."
     },
@@ -589,7 +589,7 @@
     "Sysmon event field SourcePort filter": {
         "prefix": "!SourcePort",
         "body": [
-            "<SourcePort name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</SourcePort>"
+            "<SourcePort name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</SourcePort>"
         ],
         "description": "Sysmon event field SourcePort filter."
     },
@@ -597,7 +597,7 @@
     "Sysmon event field SourcePortName filter": {
         "prefix": "!SourcePortName",
         "body": [
-            "<SourcePortName name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</SourcePortName>"
+            "<SourcePortName name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</SourcePortName>"
         ],
         "description": "Sysmon event field SourcePortName filter."
     },
@@ -605,7 +605,7 @@
     "Sysmon event field SourceThreadId filter": {
         "prefix": "!SourceThreadId",
         "body": [
-            "<SourceThreadId name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</SourceThreadId>"
+            "<SourceThreadId name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</SourceThreadId>"
         ],
         "description": "Sysmon event field SourceThreadId filter."
     },
@@ -613,7 +613,7 @@
     "Sysmon event field StartAddress filter": {
         "prefix": "!StartAddress",
         "body": [
-            "<StartAddress name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</StartAddress>"
+            "<StartAddress name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</StartAddress>"
         ],
         "description": "Sysmon event field StartAddress filter."
     },
@@ -621,7 +621,7 @@
     "Sysmon event field StartFunction filter": {
         "prefix": "!StartFunction",
         "body": [
-            "<StartFunction name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</StartFunction>"
+            "<StartFunction name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</StartFunction>"
         ],
         "description": "Sysmon event field StartFunction filter."
     },
@@ -629,7 +629,7 @@
     "Sysmon event field StartModule filter": {
         "prefix": "!StartModule",
         "body": [
-            "<StartModule name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</StartModule>"
+            "<StartModule name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</StartModule>"
         ],
         "description": "Sysmon event field StartModule filter."
     },
@@ -637,7 +637,7 @@
     "Sysmon event field State filter": {
         "prefix": "!State",
         "body": [
-            "<State name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</State>"
+            "<State name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</State>"
         ],
         "description": "Sysmon event field State filter."
     },
@@ -645,7 +645,7 @@
     "Sysmon event field TargetFilename filter": {
         "prefix": "!TargetFilename",
         "body": [
-            "<TargetFilename name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</TargetFilename>"
+            "<TargetFilename name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</TargetFilename>"
         ],
         "description": "Sysmon event field TargetFilename filter."
     },
@@ -653,7 +653,7 @@
     "Sysmon event field TargetImage filter": {
         "prefix": "!TargetImage",
         "body": [
-            "<TargetImage name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</TargetImage>"
+            "<TargetImage name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</TargetImage>"
         ],
         "description": "Sysmon event field TargetImage filter."
     },
@@ -661,7 +661,7 @@
     "Sysmon event field TargetObject filter": {
         "prefix": "!TargetObject",
         "body": [
-            "<TargetObject name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</TargetObject>"
+            "<TargetObject name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</TargetObject>"
         ],
         "description": "Sysmon event field TargetObject filter."
     },
@@ -669,7 +669,7 @@
     "Sysmon event field Type filter": {
         "prefix": "!Type",
         "body": [
-            "<Type name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Type>"
+            "<Type name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Type>"
         ],
         "description": "Sysmon event field Type filter."
     },
@@ -677,7 +677,7 @@
     "Sysmon event field User filter": {
         "prefix": "!User",
         "body": [
-            "<User name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</User>"
+            "<User name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</User>"
         ],
         "description": "Sysmon event field User filter."
     },
@@ -685,7 +685,7 @@
     "Sysmon event field Version filter": {
         "prefix": "!Version",
         "body": [
-            "<Version name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,begin with,end with,less than,more than,image|}\">${3}</Version>"
+            "<Version name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all, excludes any,begin with,end with,less than,more than,image|}\">${3}</Version>"
         ],
         "description": "Sysmon event field Version filter."
     },
