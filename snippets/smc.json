@@ -25,7 +25,7 @@
             "  <!-- Checking for signature revocation for drivers. -->",
             "  <CheckRevocation/>",
             "  <EventFiltering>",
-            "    ${2}",
+            "    ${3}",
             "  </EventFiltering>",
            "</Sysmon>"
         ],
@@ -41,6 +41,17 @@
         ],
         "description": "Sysmon Rule Group"
     },
+
+    "Sysmon DnsLookup": {
+        "prefix": "dnslookup",
+        "body": [ 
+            "<DnsLookup>",
+            "  ${1|true,false|}",
+            "</DnsLookup>"
+        ],
+        "description": "Sysmon DnsLookup"
+    },
+
 
     "Sysmon Rule": {
         "prefix": "rule",
@@ -200,6 +211,16 @@
             "</DnsQuery>"
         ],
         "description": "Sysmon DnsQuery EventType."
+    },
+
+    "Sysmon EventType FileDelete": {
+        "prefix": "!FileDelete",
+        "body": [
+            "<FileDelete onmatch=\"${1|include,exclude|}\">",
+            "  ${2}",
+            "</FileDelete>"
+        ],
+        "description": "Sysmon FileDelete EventType."
     },
 
     "Sysmon event field CallTrace filter": {
