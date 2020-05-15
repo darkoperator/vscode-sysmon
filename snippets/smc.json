@@ -951,5 +951,16 @@
                    "<Image> </Image>"
             ],
             "description": "Sysmon sysmon_dns_query EventType."
-        }
+        },
+    "Sysmon EventType SYSMON_FILE_DELETE filter set.": {
+            "prefix": "!sysmon_filedelete_set",
+            "body": [
+                    "<User> </User>",
+                    "<Image> </Image>",
+                    "<TargetFilename> </TargetFilename>",
+                    "<Hashes> </Hashes>",
+                    "<IsExecutable> </IsExecutable>"
+                ],
+                "description": "Sysmon sysmon_file_create_stream_hash EventType."
+            }
 }

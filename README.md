@@ -4,7 +4,7 @@ This Visual Studio Code extension is for heping in the writting of Sysmon XML co
 
 ## Features
 
-This extensions offers a series of snippets for helping in building a Microsofty Sysinternals Sysmon XML configuration. The extension is based on the 4.22 version of the Sysinternals Sysmon schema. It also provide automatic closing of element tags for the filter fields.
+This extensions offers a series of snippets for helping in building a Microsofty Sysinternals Sysmon XML configuration. The extension is based on the 4.30 version of the Sysinternals Sysmon schema. It also provide automatic closing of element tags for the filter fields.
 
 ## Usage
 
