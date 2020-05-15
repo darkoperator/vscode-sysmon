@@ -18,10 +18,10 @@
     "Template Sysmon Config": {
         "prefix": "sysmon_config",
         "body": [ 
-            "<Sysmon schemaversion=\"${1|4.22,4.23|}\">",
+            "<Sysmon schemaversion=\"${1|4.22,4.23,4.30|}\">",
             "  <!-- Hashing algorithms that can be used are md5,sha1,sha256,imphash or * for all,", 
             "  more than once can be specified separated by using comas -->",
-            "  <HashAlgorithms>${1|md5,sha1,sha256,imphash,*|}</HashAlgorithms>",
+            "  <HashAlgorithms>${2|md5,sha1,sha256,imphash,*|}</HashAlgorithms>",
             "  <!-- Checking for signature revocation for drivers. -->",
             "  <CheckRevocation/>",
             "  <EventFiltering>",
