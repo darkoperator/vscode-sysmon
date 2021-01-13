@@ -143,8 +143,20 @@ When working with Rule elements in the config where he order of the field play a
 | !sysmon_wmi_consumer_filter_set | Sysmon EventType SYSMON_WMI_CONSUMER filter set. |
 | !sysmon_wmi_binding_filter_set | Sysmon EventType SYSMON_WMI_BINDING filter set. |
 | !sysmon_dns_query_filter_set | Sysmon EventType SYSMON_DNS_QUERY filter set. |
+| !sysmon_filedelete_set | Sysmon EventType SYSMON_FILE_DELETE filter set. |
+| !sysmon_clipboardchange_set | Sysmon EventType SYSMON_CLIPBOARD filter set. |
+| !sysmon_processtampering_set | Sysmon EventType SYSMON_PROCESS_IMAGE_TAMPERING filter set. |
 
 ## Release Notes
+
+### 1.3.0
+
+* Added support for Sysmon Process Tampering EventId 25.
+* Fixed multiple typos.
+
+### 1.2.0
+
+* Added support for Sysmon Clipboard Change EventId 24.
 
 ### 1.0.0
 
