@@ -16,12 +16,6 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": [
-			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
-			}
-		],
 		"snippets": [
 			{
 				"language": "smc",
@@ -64,8 +58,8 @@
 		"@types/vscode": "^1.39.0",
 		"glob": "^7.1.4",
 		"mocha": "^6.1.4",
-		"typescript": "^3.3.1",
 		"tslint": "^5.12.1",
+		"typescript": "^3.3.1",
 		"vscode-test": "^1.2.0"
 	},
 	"license": "SEE LICENSE IN LICENSE.txt",
