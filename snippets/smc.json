@@ -32,6 +32,20 @@
         "description": "Initial base configuration for Sysmon"
     },
 
+    "Template Sysmon Linux_Config": {
+        "prefix": "sysmon_Linux_config",
+        "body": [ 
+            "<Sysmon schemaversion=\"${1|4.81|}\">",
+            "  <FieldSizes>CommandLine:100,Image:100</FieldSizes>",
+            "  <CheckRevocation/>",
+            "  <EventFiltering>",
+            "    ${2}",
+            "  </EventFiltering>",
+           "</Sysmon>"
+        ],
+        "description": "Initial base configuration for Sysmon on Linux"
+    },
+
     "Archive Directory Name": {
         "prefix": "archive",
         "body": [ 
@@ -39,6 +53,15 @@
         ],
         "description": "XML comment line to describe or document section of the config."
     },
+
+    "Field Sizes for Syslog": {
+        "prefix": "FielsSizes",
+        "body": [ 
+            "<FieldSizes>CommandLine:50,Image:50</FieldSizes> "
+        ],
+        "description": "specify how long you want fields to be so you can avoid the Syslog overrun/broken XML problem."
+    },
+
 
     "Sysmon RuleGroup": {
         "prefix": "rulegroup",
@@ -739,6 +762,30 @@
             "<User name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all,excludes any,begin with,not begin with,not end with,end with,less than,more than,image|}\">${3}</User>"
         ],
         "description": "Sysmon event field User filter."
+    },
+
+    "Sysmon event field ParentUser filter": {
+        "prefix": "!ParentUser",
+        "body": [
+            "<ParentUser name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all,excludes any,begin with,not begin with,not end with,end with,less than,more than,image|}\">${3}</ParentUser>"
+        ],
+        "description": "Sysmon event field ParentUser filter."
+    },
+
+    "Sysmon event field TargetUser filter": {
+        "prefix": "!TargetUser",
+        "body": [
+            "<TargetUser name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all,excludes any,begin with,not begin with,not end with,end with,less than,more than,image|}\">${3}</TargetUser>"
+        ],
+        "description": "Sysmon event field TargetUser filter."
+    },
+
+    "Sysmon event field SourveUser filter": {
+        "prefix": "!SourceUser",
+        "body": [
+            "<SourceUser name=\"$1\" condition=\"${2|is,is not,contains,contains any,contains all,excludes,excludes all,excludes any,begin with,not begin with,not end with,end with,less than,more than,image|}\">${3}</SourceUser>"
+        ],
+        "description": "Sysmon event field SourceUser filter."
     },
 
     "Sysmon event field Version filter": {
