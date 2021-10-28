@@ -18,7 +18,7 @@
     "Template Sysmon Config": {
         "prefix": "sysmon_config",
         "body": [ 
-            "<Sysmon schemaversion=\"${1|4.30,4.40,4.50,4.60,4.70|}\">",
+            "<Sysmon schemaversion=\"${1|4.30,4.40,4.50,4.60,4.70,4.81|}\">",
             "  <!-- Hashing algorithms that can be used are md5,sha1,sha256,imphash or * for all,", 
             "  more than once can be specified separated by using comas -->",
             "  <HashAlgorithms>${2|md5,sha1,sha256,imphash,*|}</HashAlgorithms>",
@@ -36,8 +36,9 @@
         "prefix": "sysmon_Linux_config",
         "body": [ 
             "<Sysmon schemaversion=\"${1|4.81|}\">",
-            "  <FieldSizes>CommandLine:100,Image:100</FieldSizes>",
-            "  <CheckRevocation/>",
+            "  <!-- Maxlength for field sizes, Syslog has 1kb limit in most default configs. -->",
+            "  <!-- Adjust according to your syslog settings and transport. -->",
+            "  <FieldSizes>CommandLine:100,Image:100,ParentCommandLine:100,ParentImage:100</FieldSizes>",
             "  <EventFiltering>",
             "    ${2}",
             "  </EventFiltering>",
@@ -811,7 +812,8 @@
                    "<IntegrityLevel> </IntegrityLevel>",
                    "<Hashes> </Hashes>",
                    "<ParentImage> </ParentImage>",
-                   "<ParentCommandLine> </ParentCommandLine>"
+                   "<ParentCommandLine> </ParentCommandLine>",
+                   "<ParentUser> </ParentUser>"
             ],
             "description": "Sysmon sysmon_create_process EventType."
         },
@@ -821,7 +823,8 @@
         "body": [
                    "<Image> </Image>",
                    "<TargetFilename> </TargetFilename>",
-                   "<PreviousCreationUtcTime> </PreviousCreationUtcTime>"
+                   "<PreviousCreationUtcTime> </PreviousCreationUtcTime>",
+                   "<User> </User>"
             ],
             "description": "Sysmon sysmon_file_time EventType."
         },
@@ -850,7 +853,8 @@
     "Sysmon EventType SYSMON_PROCESS_TERMINATE filter set.": {
         "prefix": "!sysmon_process_terminate_filter_set",
         "body": [
-                   "<Image> </Image>"
+                   "<Image> </Image>",
+                   "<User> </User>"
             ],
             "description": "Sysmon sysmon_process_terminate EventType."
         },
@@ -880,7 +884,8 @@
                    "<Hashes> </Hashes>",
                    "<Signed> </Signed>",
                    "<Signature> </Signature>",
-                   "<SignatureStatus> </SignatureStatus>"
+                   "<SignatureStatus> </SignatureStatus>",
+                   "<User> </User>"
             ],
             "description": "Sysmon sysmon_image_load EventType."
         },
@@ -892,7 +897,9 @@
                    "<TargetImage> </TargetImage>",
                    "<StartAddress> </StartAddress>",
                    "<StartModule> </StartModule>",
-                   "<StartFunction> </StartFunction>"
+                   "<StartFunction> </StartFunction>",
+                   "<SourceUser> </SourceUser>",
+                   "<TargetUser> </TargetUser>"
             ],
             "description": "Sysmon sysmon_create_remote_thread EventType."
         },
@@ -901,7 +908,8 @@
         "prefix": "!sysmon_rawaccess_read_filter_set",
         "body": [
                    "<Image> </Image>",
-                   "<Device> </Device>"
+                   "<Device> </Device>",
+                   "<User> </User>"
             ],
             "description": "Sysmon sysmon_rawaccess_read EventType."
         },
@@ -913,7 +921,10 @@
                    "<SourceImage> </SourceImage>",
                    "<TargetImage> </TargetImage>",
                    "<GrantedAccess> </GrantedAccess>",
-                   "<CallTrace> </CallTrace>"
+                   "<CallTrace> </CallTrace>",
+                   "<SourceUser> </SourceUser>",
+                   "<TargetUser> </TargetUser>"
+                   
             ],
             "description": "Sysmon sysmon_access_process EventType."
         },
@@ -922,7 +933,8 @@
         "prefix": "!sysmon_file_create_filter_set",
         "body": [
                    "<Image> </Image>",
-                   "<TargetFilename> </TargetFilename>"
+                   "<TargetFilename> </TargetFilename>",
+                   "<User> </User>"
             ],
             "description": "Sysmon sysmon_file_create EventType."
         },
@@ -932,7 +944,8 @@
         "body": [
                    "<EventType> </EventType>",
                    "<Image> </Image>",
-                   "<TargetObject> </TargetObject>"
+                   "<TargetObject> </TargetObject>",
+                   "<User> </User>"
             ],
             "description": "Sysmon sysmon_reg_key EventType."
         },
@@ -943,7 +956,8 @@
                    "<EventType> </EventType>",
                    "<Image> </Image>",
                    "<TargetObject> </TargetObject>",
-                   "<Details> </Details>"
+                   "<Details> </Details>",
+                   "<User> </User>"
             ],
             "description": "Sysmon sysmon_reg_setvalue EventType."
         },
@@ -954,7 +968,8 @@
                    "<EventType> </EventType>",
                    "<Image> </Image>",
                    "<TargetObject> </TargetObject>",
-                   "<NewName> </NewName>"
+                   "<NewName> </NewName>",
+                   "<User> </User>"
             ],
             "description": "Sysmon sysmon_reg_name EventType."
         },
@@ -964,7 +979,8 @@
         "body": [
                    "<Image> </Image>",
                    "<TargetFilename> </TargetFilename>",
-                   "<Hash> </Hash>"
+                   "<Hash> </Hash>",
+                   "<User> </User>"
             ],
             "description": "Sysmon sysmon_file_create_stream_hash EventType."
         },
@@ -974,7 +990,8 @@
         "body": [
                    "<EventType> </EventType>",
                    "<PipeName> </PipeName>",
-                   "<Image> </Image>"
+                   "<Image> </Image>",
+                   "<User> </User>"
             ],
             "description": "Sysmon sysmon_create_namedpipe EventType."
         },
@@ -984,7 +1001,8 @@
         "body": [
                    "<EventType> </EventType>",
                    "<PipeName> </PipeName>",
-                   "<Image> </Image>"
+                   "<Image> </Image>",
+                   "<User> </User>"
             ],
             "description": "Sysmon sysmon_connect_namedpipe EventType."
         },
@@ -1033,7 +1051,8 @@
                    "<QueryName> </QueryName>",
                    "<QueryStatus> </QueryStatus>",
                    "<QueryResults> </QueryResults>",
-                   "<Image> </Image>"
+                   "<Image> </Image>",
+                   "<User> </User>"
             ],
             "description": "Sysmon sysmon_dns_query EventType."
         },
@@ -1057,7 +1076,8 @@
                 "<Session> </Session>",
                 "<Hashes> </Hashes>",
                 "<ClientInfo> </ClientInfo>",
-                "<Archived> </Archived>"
+                "<Archived> </Archived>",
+                "<User> </User>"
             ],
             "description": "Sysmon sysmon_clipboard_change EventType."
         },
@@ -1068,7 +1088,8 @@
                 "<ProcessGuid> </ProcessGuid>",
                 "<ProcessId> </ProcessId>",
                 "<Image> </Image>",
-                "<Type> </Type>"
+                "<Type> </Type>",
+                "<User> </User>"
             ],
             "description": "Sysmon sysmon_process_image_tampering EventType."
         }

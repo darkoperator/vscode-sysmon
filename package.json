@@ -2,7 +2,7 @@
 	"name": "sysmon",
 	"displayName": "Sysmon",
 	"description": "Microsoft Sysinternals Sysmon Configuration file authoring extension.",
-	"version": "1.7.0",
+	"version": "1.7.1",
 	"engines": {
 		"vscode": "^1.40.0"
 	},
