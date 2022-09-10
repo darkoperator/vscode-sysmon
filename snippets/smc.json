@@ -18,7 +18,7 @@
     "Template Sysmon Config": {
         "prefix": "sysmon_config",
         "body": [ 
-            "<Sysmon schemaversion=\"${1|4.30,4.40,4.50,4.60,4.70,4.81|}\">",
+            "<Sysmon schemaversion=\"${1|4.60,4.70,4.81,4.82|}\">",
             "  <!-- Hashing algorithms that can be used are md5,sha1,sha256,imphash or * for all,", 
             "  more than once can be specified separated by using comas -->",
             "  <HashAlgorithms>${2|md5,sha1,sha256,imphash,*|}</HashAlgorithms>",
@@ -251,6 +251,16 @@
             "<FileDelete onmatch=\"${1|include,exclude|}\">",
             "  ${2}",
             "</FileDelete>"
+        ],
+        "description": "Sysmon FileDelete EventType."
+    },
+
+    "Sysmon EventType FileBlockExecutable": {
+        "prefix": "!FileBlockExecutable",
+        "body": [
+            "<FileBlockExecutable onmatch=\"${1|include,exclude|}\">",
+            "  ${2}",
+            "</FileBlockExecutable>"
         ],
         "description": "Sysmon FileDelete EventType."
     },
@@ -1092,5 +1102,16 @@
                 "<User> </User>"
             ],
             "description": "Sysmon sysmon_process_image_tampering EventType."
-        }
+        },
+        "Sysmon EventType SYSMON_FILE_BLOCK_EXE filter set.": {
+            "prefix": "!sysmon_fileblockexe_set",
+            "body": [
+                    "<User> </User>",
+                    "<Image> </Image>",
+                    "<TargetFilename> </TargetFilename>",
+                    "<Hashes> </Hashes>",
+                    "<IsExecutable> </IsExecutable>"
+                ],
+                "description": "Sysmon sysmon_file_block_exe EventType."
+            }
 }
