@@ -262,7 +262,17 @@
             "  ${2}",
             "</FileBlockExecutable>"
         ],
-        "description": "Sysmon FileDelete EventType."
+        "description": "Sysmon FileBlockExecutable EventType."
+    },
+
+    "Sysmon EventType FileBlockShredding": {
+        "prefix": "!FileBlockShredding",
+        "body": [
+            "<FileBlockShredding onmatch=\"${1|include,exclude|}\">",
+            "  ${2}",
+            "</FileBlockShredding>"
+        ],
+        "description": "Sysmon FileBlockShredding EventType."
     },
 
     "Sysmon EventType FileDeleteDetected": {
@@ -1122,7 +1132,7 @@
                     "<Hashes> </Hashes>",
                     "<IsExecutable> </IsExecutable>"
                 ],
-                "description": "Sysmon SYSMONEVENT_FILE_BLOCK_SHREDDING EventType."
+                "description": "Sysmon sysmon_file_block_shredding EventType."
             }
         
 }

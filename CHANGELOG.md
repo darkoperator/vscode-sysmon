@@ -27,3 +27,35 @@
 - Added initial config template for Linux Sysmon
 - Added Field Length snippet for specifying the command and image filed length.
 - Added ParentUser, User, TargetUser and SourceUser attribute field snippets for Linux Sysmon. 
+
+## [1.8.0] - 2022-08-17
+
+### Added
+
+- Bump path-parse from 1.0.6 to 1.0.7
+- Bump ansi-regex from 3.0.0 to 3.0.1
+
+
+## [1.8.1] - 2022-09-10
+
+### Added
+
+- FileBlockExe event type support.
+- Support for specifying 4.82 schema 
+
+
+## [1.8.2] - 2022-10-09
+
+### Added
+
+- FileBlockShredding event type support.
+- Support for specifying 4.83 schema,
+- Raise support level for VS Code version. 
+
+## [1.8.3] - 2022-10-10
+
+### Added
+
+- Fixed description typos.
+- Added missing eventype information for fileblockshredding
+
