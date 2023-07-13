@@ -32,8 +32,8 @@
 
 ### Added
 
-- Bump path-parse from 1.0.6 to 1.0.7
-- Bump ansi-regex from 3.0.0 to 3.0.1
+- Bump path-parse from 1.0.6 to 1.0.7.
+- Bump ansi-regex from 3.0.0 to 3.0.1.
 
 
 ## [1.8.1] - 2022-09-10
@@ -41,7 +41,7 @@
 ### Added
 
 - FileBlockExe event type support.
-- Support for specifying 4.82 schema 
+- Support for specifying 4.82 schema .
 
 
 ## [1.8.2] - 2022-10-09
@@ -49,7 +49,7 @@
 ### Added
 
 - FileBlockShredding event type support.
-- Support for specifying 4.83 schema,
+- Support for specifying 4.83 schema.
 - Raise support level for VS Code version. 
 
 ## [1.8.3] - 2022-10-10
@@ -57,5 +57,10 @@
 ### Added
 
 - Fixed description typos.
-- Added missing eventype information for fileblockshredding
+- Added missing even type information for fileblockshredding.
+
+## [1.9.0]
+- Support for Schema 4.90 with the Sysmon 15.0 version.
+- Removed support for schema 4.60. 
+- FileExecutableDetected event type support.
 
