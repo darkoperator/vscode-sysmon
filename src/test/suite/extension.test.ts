@@ -61,11 +61,30 @@ suite('Completion Helpers', () => {
 		]);
 	});
 
-	test('event tag completions include starter Sysmon events', () => {
+	test('event tag completions include schema Sysmon events', () => {
 		assert.deepStrictEqual(EVENT_TAG_COMPLETIONS, [
 			'ProcessCreate',
+			'FileCreateTime',
 			'NetworkConnect',
-			'ImageLoad'
+			'ProcessTerminate',
+			'DriverLoad',
+			'ImageLoad',
+			'CreateRemoteThread',
+			'RawAccessRead',
+			'ProcessAccess',
+			'FileCreate',
+			'RegistryEvent',
+			'FileCreateStreamHash',
+			'PipeEvent',
+			'WmiEvent',
+			'DnsQuery',
+			'FileDelete',
+			'FileBlockExecutable',
+			'FileExecutableDetected',
+			'FileBlockShredding',
+			'FileDeleteDetected',
+			'ClipboardChange',
+			'ProcessTampering'
 		]);
 	});
 
