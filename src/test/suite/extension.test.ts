@@ -56,10 +56,44 @@ suite('Diagnostic Helpers', () => {
 		);
 	});
 
-	test('does not report field tags inside known events', () => {
+	test('does not report known field tags inside known events', () => {
 		assert.deepStrictEqual(
 			getSysmonDiagnostics('<EventFiltering>\n<ProcessCreate>\n<Image condition="is">cmd.exe</Image>\n</ProcessCreate>\n</EventFiltering>'),
 			[]
+		);
+	});
+
+	test('reports unknown field tags inside known events', () => {
+		const documentText = '<EventFiltering>\n<ProcessCreate>\n<BadField>\n</ProcessCreate>\n</EventFiltering>';
+		const diagnostics = getSysmonDiagnostics(documentText);
+
+		assert.strictEqual(diagnostics.length, 1);
+		assert.strictEqual(diagnostics[0].message, 'Unknown Sysmon field tag "BadField" for event "ProcessCreate".');
+		assert.strictEqual(diagnostics[0].severity, vscode.DiagnosticSeverity.Warning);
+		assert.strictEqual(diagnostics[0].start, '<EventFiltering>\n<ProcessCreate>\n<'.length);
+		assert.strictEqual(diagnostics[0].end, '<EventFiltering>\n<ProcessCreate>\n<BadField'.length);
+	});
+
+	test('reports fields that are valid for another event but invalid for the active event', () => {
+		const diagnostics = getSysmonDiagnostics(
+			'<EventFiltering>\n<ProcessCreate>\n<DestinationIp>\n</ProcessCreate>\n</EventFiltering>'
+		);
+
+		assert.strictEqual(diagnostics.length, 1);
+		assert.strictEqual(diagnostics[0].message, 'Unknown Sysmon field tag "DestinationIp" for event "ProcessCreate".');
+	});
+
+	test('does not report unknown field diagnostics outside known events', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<EventFiltering>\n<BadField>\n</EventFiltering>'),
+			[
+				{
+					message: 'Unknown Sysmon event tag "BadField".',
+					severity: vscode.DiagnosticSeverity.Warning,
+					start: '<EventFiltering>\n<'.length,
+					end: '<EventFiltering>\n<BadField'.length
+				}
+			]
 		);
 	});
 

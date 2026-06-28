@@ -5,7 +5,8 @@ import {
 	CONDITION_OPERATORS,
 	GROUP_RELATION_VALUES,
 	ONMATCH_VALUES,
-	SYSMON_EVENTS
+	SYSMON_EVENTS,
+	SysmonEventDefinition
 } from './sysmonSchema';
 
 export const CONDITION_COMPLETIONS = CONDITION_OPERATORS;
@@ -94,20 +95,22 @@ function isInsideComment(documentText: string, offset: number): boolean {
 	return lastCommentOpen !== -1 && lastCommentOpen > lastCommentClose;
 }
 
-function isInsideKnownEvent(documentText: string, offset: number): boolean {
+function getActiveEvent(documentText: string, offset: number): SysmonEventDefinition | undefined {
+	const textBeforeOffset = documentText.slice(0, offset);
 	let activeEventTagIndex = -1;
+	let activeEvent: SysmonEventDefinition | undefined;
 
 	for (const event of SYSMON_EVENTS) {
-		const textBeforeOffset = documentText.slice(0, offset);
 		const lastEventOpen = textBeforeOffset.lastIndexOf(`<${event.tag}`);
 		const lastEventClose = textBeforeOffset.lastIndexOf(`</${event.tag}>`);
 
 		if (lastEventOpen > lastEventClose && lastEventOpen > activeEventTagIndex) {
 			activeEventTagIndex = lastEventOpen;
+			activeEvent = event;
 		}
 	}
 
-	return activeEventTagIndex !== -1;
+	return activeEvent;
 }
 
 export function getSysmonDiagnostics(documentText: string): SysmonDiagnostic[] {
@@ -131,7 +134,23 @@ export function getSysmonDiagnostics(documentText: string): SysmonDiagnostic[] {
 			continue;
 		}
 
-		if (isInsideKnownEvent(documentText, tagStart)) {
+		const activeEvent = getActiveEvent(documentText, tagStart);
+
+		if (activeEvent) {
+			if (tagName === activeEvent.tag) {
+				continue;
+			}
+
+			if (activeEvent.fields.some(field => field.name === tagName)) {
+				continue;
+			}
+
+			diagnostics.push({
+				message: `Unknown Sysmon field tag "${tagName}" for event "${activeEvent.tag}".`,
+				severity: vscode.DiagnosticSeverity.Warning,
+				start: tagNameStart,
+				end: tagNameEnd
+			});
 			continue;
 		}
 
