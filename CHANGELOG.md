@@ -1,5 +1,11 @@
 # Change Log
 
+### Unreleased
+
+* Changed extension activation to run only for Sysmon language files.
+* Associated Sysmon language mode with `.smc` files without claiming all `.xml` files.
+* Added current Sysmon condition completion operators.
+
 ## [1.0.0]
 
 - Initial release

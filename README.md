@@ -1,14 +1,14 @@
 # Sysmon
 
-This Visual Studio Code extension is for heping in the writting of Sysmon XML configuration files.
+This Visual Studio Code extension helps with writing Microsoft Sysinternals Sysmon XML configuration files.
 
 ## Features
 
-This extensions offers a series of snippets for helping in building a Microsofty Sysinternals Sysmon XML configuration. The extension is based on the 4.30 version of the Sysinternals Sysmon schema. It also provide automatic closing of element tags for the filter fields.
+This extension offers snippets for building Microsoft Sysinternals Sysmon XML configurations. The extension is based on the 4.30 version of the Sysinternals Sysmon schema. It also provides automatic closing of element tags for filter fields.
 
 ## Usage
 
-Change the language to Sysmon on a existing XML file or use the extension ".smc".
+Files with the `.smc` extension open in Sysmon language mode automatically. For existing `.xml` Sysmon configuration files, use VS Code's language selector to change the language mode to Sysmon.
 
 ![Set Language to Sysmon](images/setlang.gif)
 
