@@ -2,9 +2,11 @@ import * as assert from 'assert';
 import * as path from 'path';
 import {
 	CONDITION_COMPLETIONS,
+	EVENT_TAG_COMPLETIONS,
 	GROUP_RELATION_COMPLETIONS,
 	ONMATCH_COMPLETIONS,
-	getAttributeCompletions
+	getAttributeCompletions,
+	getElementCompletions
 } from '../../extension';
 
 const packageJson = require(path.join(__dirname, '../../../package.json'));
@@ -56,6 +58,36 @@ suite('Completion Helpers', () => {
 			'and',
 			'or'
 		]);
+	});
+
+	test('event tag completions include starter Sysmon events', () => {
+		assert.deepStrictEqual(EVENT_TAG_COMPLETIONS, [
+			'ProcessCreate',
+			'NetworkConnect',
+			'ImageLoad'
+		]);
+	});
+
+	test('returns event tag completions inside an open EventFiltering block', () => {
+		assert.deepStrictEqual(
+			getElementCompletions('<EventFiltering>\n<', '<'),
+			EVENT_TAG_COMPLETIONS
+		);
+	});
+
+	test('returns no event tag completions outside EventFiltering', () => {
+		assert.strictEqual(getElementCompletions('<Sysmon>\n<', '<'), undefined);
+	});
+
+	test('returns no event tag completions after EventFiltering is closed', () => {
+		assert.strictEqual(
+			getElementCompletions('<EventFiltering>\n</EventFiltering>\n<', '<'),
+			undefined
+		);
+	});
+
+	test('returns no event tag completions when not starting an element', () => {
+		assert.strictEqual(getElementCompletions('<EventFiltering>\n', ''), undefined);
 	});
 
 	test('returns condition completions after condition attribute prefix', () => {
