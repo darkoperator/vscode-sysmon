@@ -2,6 +2,7 @@ import * as assert from 'assert';
 import * as path from 'path';
 import {
 	CONDITION_COMPLETIONS,
+	GROUP_RELATION_COMPLETIONS,
 	ONMATCH_COMPLETIONS,
 	getAttributeCompletions
 } from '../../extension';
@@ -50,6 +51,13 @@ suite('Completion Helpers', () => {
 		]);
 	});
 
+	test('group relation completions include and and or', () => {
+		assert.deepStrictEqual(GROUP_RELATION_COMPLETIONS, [
+			'and',
+			'or'
+		]);
+	});
+
 	test('returns condition completions after condition attribute prefix', () => {
 		assert.deepStrictEqual(
 			getAttributeCompletions('<Image condition="'),
@@ -61,6 +69,13 @@ suite('Completion Helpers', () => {
 		assert.deepStrictEqual(
 			getAttributeCompletions('<ProcessCreate onmatch="'),
 			ONMATCH_COMPLETIONS
+		);
+	});
+
+	test('returns group relation completions after groupRelation attribute prefix', () => {
+		assert.deepStrictEqual(
+			getAttributeCompletions('<RuleGroup groupRelation="'),
+			GROUP_RELATION_COMPLETIONS
 		);
 	});
 

@@ -1,9 +1,10 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { CONDITION_OPERATORS, ONMATCH_VALUES } from './sysmonSchema';
+import { CONDITION_OPERATORS, GROUP_RELATION_VALUES, ONMATCH_VALUES } from './sysmonSchema';
 
 export const CONDITION_COMPLETIONS = CONDITION_OPERATORS;
+export const GROUP_RELATION_COMPLETIONS = GROUP_RELATION_VALUES;
 export const ONMATCH_COMPLETIONS = ONMATCH_VALUES;
 
 export function getAttributeCompletions(linePrefix: string): string[] | undefined {
@@ -13,6 +14,10 @@ export function getAttributeCompletions(linePrefix: string): string[] | undefine
 
 	if (linePrefix.endsWith('onmatch="')) {
 		return ONMATCH_COMPLETIONS;
+	}
+
+	if (linePrefix.endsWith('groupRelation="')) {
+		return GROUP_RELATION_COMPLETIONS;
 	}
 
 	return undefined;
