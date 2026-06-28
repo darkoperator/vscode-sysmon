@@ -1,30 +1,10 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { CONDITION_OPERATORS, ONMATCH_VALUES } from './sysmonSchema';
 
-export const CONDITION_COMPLETIONS = [
-	'is',
-	'is not',
-	'is any',
-	'contains',
-	'contains any',
-	'contains all',
-	'excludes',
-	'excludes any',
-	'excludes all',
-	'begin with',
-	'not begin with',
-	'end with',
-	'not end with',
-	'less than',
-	'more than',
-	'image'
-];
-
-export const ONMATCH_COMPLETIONS = [
-	'include',
-	'exclude'
-];
+export const CONDITION_COMPLETIONS = CONDITION_OPERATORS;
+export const ONMATCH_COMPLETIONS = ONMATCH_VALUES;
 
 export function getAttributeCompletions(linePrefix: string): string[] | undefined {
 	if (linePrefix.endsWith('condition="')) {
