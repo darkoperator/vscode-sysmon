@@ -27,6 +27,13 @@ const STRUCTURAL_TAGS = [
 	'Rule'
 ];
 
+const CONDITION_ALIASES = [
+	'begins with',
+	'not begins with',
+	'ends with',
+	'not ends with'
+];
+
 export function getAttributeCompletions(linePrefix: string): string[] | undefined {
 	if (linePrefix.endsWith('condition="')) {
 		return CONDITION_COMPLETIONS;
@@ -113,6 +120,53 @@ function getActiveEvent(documentText: string, offset: number): SysmonEventDefini
 	return activeEvent;
 }
 
+function getAllowedAttributeValues(attributeName: string): string[] | undefined {
+	if (attributeName === 'condition') {
+		return CONDITION_OPERATORS.concat(CONDITION_ALIASES);
+	}
+
+	if (attributeName === 'onmatch') {
+		return ONMATCH_VALUES;
+	}
+
+	if (attributeName === 'groupRelation') {
+		return GROUP_RELATION_VALUES;
+	}
+
+	return undefined;
+}
+
+function getAttributeDiagnostics(documentText: string): SysmonDiagnostic[] {
+	const diagnostics: SysmonDiagnostic[] = [];
+	const attributePattern = /\b(condition|onmatch|groupRelation)="([^"]*)"/g;
+	let match: RegExpExecArray | null;
+
+	while ((match = attributePattern.exec(documentText)) !== null) {
+		const attributeName = match[1];
+		const attributeValue = match[2];
+		const valueStart = match.index + attributeName.length + '="'.length;
+		const valueEnd = valueStart + attributeValue.length;
+		const allowedValues = getAllowedAttributeValues(attributeName);
+
+		if (!allowedValues || allowedValues.indexOf(attributeValue) !== -1) {
+			continue;
+		}
+
+		if (isInsideComment(documentText, match.index)) {
+			continue;
+		}
+
+		diagnostics.push({
+			message: `Invalid Sysmon ${attributeName} value "${attributeValue}".`,
+			severity: vscode.DiagnosticSeverity.Warning,
+			start: valueStart,
+			end: valueEnd
+		});
+	}
+
+	return diagnostics;
+}
+
 export function getSysmonDiagnostics(documentText: string): SysmonDiagnostic[] {
 	const diagnostics: SysmonDiagnostic[] = [];
 	const knownEventTags = new Set(SYSMON_EVENTS.map(event => event.tag));
@@ -166,7 +220,7 @@ export function getSysmonDiagnostics(documentText: string): SysmonDiagnostic[] {
 		});
 	}
 
-	return diagnostics;
+	return diagnostics.concat(getAttributeDiagnostics(documentText));
 }
 
 function toCompletionItems(values: string[]): vscode.CompletionItem[] {

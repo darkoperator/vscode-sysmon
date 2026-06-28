@@ -97,6 +97,67 @@ suite('Diagnostic Helpers', () => {
 		);
 	});
 
+	test('reports invalid condition attribute values', () => {
+		const documentText = '<EventFiltering>\n<ProcessCreate>\n<Image condition="bad">cmd.exe</Image>\n</ProcessCreate>\n</EventFiltering>';
+		const diagnostics = getSysmonDiagnostics(documentText);
+
+		assert.strictEqual(diagnostics.length, 1);
+		assert.strictEqual(diagnostics[0].message, 'Invalid Sysmon condition value "bad".');
+		assert.strictEqual(diagnostics[0].severity, vscode.DiagnosticSeverity.Warning);
+		assert.strictEqual(diagnostics[0].start, documentText.indexOf('bad'));
+		assert.strictEqual(diagnostics[0].end, documentText.indexOf('bad') + 'bad'.length);
+	});
+
+	test('reports invalid onmatch attribute values', () => {
+		const documentText = '<EventFiltering>\n<ProcessCreate onmatch="bad">\n</ProcessCreate>\n</EventFiltering>';
+		const diagnostics = getSysmonDiagnostics(documentText);
+
+		assert.strictEqual(diagnostics.length, 1);
+		assert.strictEqual(diagnostics[0].message, 'Invalid Sysmon onmatch value "bad".');
+		assert.strictEqual(diagnostics[0].severity, vscode.DiagnosticSeverity.Warning);
+		assert.strictEqual(diagnostics[0].start, documentText.indexOf('bad'));
+		assert.strictEqual(diagnostics[0].end, documentText.indexOf('bad') + 'bad'.length);
+	});
+
+	test('reports invalid groupRelation attribute values', () => {
+		const documentText = '<EventFiltering>\n<RuleGroup groupRelation="bad">\n</RuleGroup>\n</EventFiltering>';
+		const diagnostics = getSysmonDiagnostics(documentText);
+
+		assert.strictEqual(diagnostics.length, 1);
+		assert.strictEqual(diagnostics[0].message, 'Invalid Sysmon groupRelation value "bad".');
+		assert.strictEqual(diagnostics[0].severity, vscode.DiagnosticSeverity.Warning);
+		assert.strictEqual(diagnostics[0].start, documentText.indexOf('bad'));
+		assert.strictEqual(diagnostics[0].end, documentText.indexOf('bad') + 'bad'.length);
+	});
+
+	test('does not report valid current attribute values', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<EventFiltering>\n<RuleGroup groupRelation="or">\n<ProcessCreate onmatch="include">\n<Image condition="contains">cmd.exe</Image>\n</ProcessCreate>\n</RuleGroup>\n</EventFiltering>'),
+			[]
+		);
+	});
+
+	test('does not report TrustedSec condition spelling aliases', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<EventFiltering>\n<ProcessCreate>\n<Image condition="begins with">C:\\Users\\</Image>\n<CommandLine condition="not ends with">.tmp</CommandLine>\n</ProcessCreate>\n</EventFiltering>'),
+			[]
+		);
+	});
+
+	test('does not report unknown attributes', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<EventFiltering>\n<ProcessCreate name="anything">\n</ProcessCreate>\n</EventFiltering>'),
+			[]
+		);
+	});
+
+	test('does not report attributes inside comments', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<EventFiltering>\n<!-- <Image condition="bad">cmd.exe</Image> -->\n</EventFiltering>'),
+			[]
+		);
+	});
+
 	test('does not report comments or XML declarations', () => {
 		assert.deepStrictEqual(
 			getSysmonDiagnostics('<?xml version="1.0"?>\n<EventFiltering>\n<!-- <BadEvent> -->\n</EventFiltering>'),
