@@ -6,7 +6,8 @@ import {
 	GROUP_RELATION_COMPLETIONS,
 	ONMATCH_COMPLETIONS,
 	getAttributeCompletions,
-	getElementCompletions
+	getElementCompletions,
+	getFieldCompletions
 } from '../../extension';
 
 const packageJson = require(path.join(__dirname, '../../../package.json'));
@@ -88,6 +89,55 @@ suite('Completion Helpers', () => {
 
 	test('returns no event tag completions when not starting an element', () => {
 		assert.strictEqual(getElementCompletions('<EventFiltering>\n', ''), undefined);
+	});
+
+	test('returns ProcessCreate field completions inside an open ProcessCreate block', () => {
+		assert.deepStrictEqual(
+			getFieldCompletions('<ProcessCreate>\n<', '<'),
+			[
+				'Image',
+				'CommandLine',
+				'ParentImage',
+				'ParentCommandLine',
+				'User',
+				'IntegrityLevel',
+				'CurrentDirectory',
+				'Hashes'
+			]
+		);
+	});
+
+	test('returns NetworkConnect field completions inside an open NetworkConnect block', () => {
+		assert.deepStrictEqual(
+			getFieldCompletions('<NetworkConnect>\n<', '<'),
+			[
+				'Image',
+				'DestinationIp',
+				'DestinationHostname',
+				'DestinationPort',
+				'DestinationPortName',
+				'SourceIp',
+				'SourceHostname',
+				'SourcePort',
+				'Protocol',
+				'User'
+			]
+		);
+	});
+
+	test('returns no field completions outside known event tags', () => {
+		assert.strictEqual(getFieldCompletions('<Sysmon>\n<', '<'), undefined);
+	});
+
+	test('returns no field completions after the event tag is closed', () => {
+		assert.strictEqual(
+			getFieldCompletions('<ProcessCreate>\n</ProcessCreate>\n<', '<'),
+			undefined
+		);
+	});
+
+	test('returns no field completions when not starting an element', () => {
+		assert.strictEqual(getFieldCompletions('<ProcessCreate>\n', ''), undefined);
 	});
 
 	test('returns condition completions after condition attribute prefix', () => {

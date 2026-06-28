@@ -44,6 +44,27 @@ export function getElementCompletions(documentText: string, linePrefix: string):
 	return EVENT_TAG_COMPLETIONS;
 }
 
+export function getFieldCompletions(documentText: string, linePrefix: string): string[] | undefined {
+	if (!linePrefix.endsWith('<')) {
+		return undefined;
+	}
+
+	let activeEventTagIndex = -1;
+	let activeEventFields: string[] | undefined;
+
+	for (const event of SYSMON_EVENTS) {
+		const lastEventOpen = documentText.lastIndexOf(`<${event.tag}`);
+		const lastEventClose = documentText.lastIndexOf(`</${event.tag}>`);
+
+		if (lastEventOpen > lastEventClose && lastEventOpen > activeEventTagIndex) {
+			activeEventTagIndex = lastEventOpen;
+			activeEventFields = event.fields.map(field => field.name);
+		}
+	}
+
+	return activeEventFields;
+}
+
 function toCompletionItems(values: string[]): vscode.CompletionItem[] {
 	return values.map(value => new vscode.CompletionItem(value, vscode.CompletionItemKind.Method));
 }
@@ -56,8 +77,10 @@ export function activate(context: vscode.ExtensionContext) {
 		{
 			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
 				const linePrefix = document.lineAt(position).text.substr(0, position.character);
+				const documentText = document.getText();
 				const values = getAttributeCompletions(linePrefix)
-					|| getElementCompletions(document.getText(), linePrefix);
+					|| getFieldCompletions(documentText, linePrefix)
+					|| getElementCompletions(documentText, linePrefix);
 
 				if (!values) {
 					return undefined;
