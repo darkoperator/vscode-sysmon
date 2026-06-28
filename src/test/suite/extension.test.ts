@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import * as path from 'path';
+import * as vscode from 'vscode';
 import {
 	CONDITION_COMPLETIONS,
 	EVENT_TAG_COMPLETIONS,
@@ -7,7 +8,8 @@ import {
 	ONMATCH_COMPLETIONS,
 	getAttributeCompletions,
 	getElementCompletions,
-	getFieldCompletions
+	getFieldCompletions,
+	getSysmonDiagnostics
 } from '../../extension';
 
 const packageJson = require(path.join(__dirname, '../../../package.json'));
@@ -22,6 +24,50 @@ suite('Extension Metadata', () => {
 
 		assert.ok(language, 'Expected smc language contribution');
 		assert.deepStrictEqual(language.extensions, ['.smc']);
+	});
+});
+
+suite('Diagnostic Helpers', () => {
+	test('reports unknown event tags inside EventFiltering', () => {
+		const diagnostics = getSysmonDiagnostics('<EventFiltering>\n<BadEvent>\n</EventFiltering>');
+
+		assert.strictEqual(diagnostics.length, 1);
+		assert.strictEqual(diagnostics[0].message, 'Unknown Sysmon event tag "BadEvent".');
+		assert.strictEqual(diagnostics[0].severity, vscode.DiagnosticSeverity.Warning);
+		assert.strictEqual(diagnostics[0].start, '<EventFiltering>\n<'.length);
+		assert.strictEqual(diagnostics[0].end, '<EventFiltering>\n<BadEvent'.length);
+	});
+
+	test('does not report known event tags inside EventFiltering', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<EventFiltering>\n<ProcessCreate>\n</ProcessCreate>\n</EventFiltering>'),
+			[]
+		);
+	});
+
+	test('does not report unknown tags outside EventFiltering', () => {
+		assert.deepStrictEqual(getSysmonDiagnostics('<Sysmon>\n<BadEvent>\n</Sysmon>'), []);
+	});
+
+	test('does not report structural tags inside EventFiltering', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<EventFiltering>\n<RuleGroup>\n<Rule>\n</Rule>\n</RuleGroup>\n</EventFiltering>'),
+			[]
+		);
+	});
+
+	test('does not report field tags inside known events', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<EventFiltering>\n<ProcessCreate>\n<Image condition="is">cmd.exe</Image>\n</ProcessCreate>\n</EventFiltering>'),
+			[]
+		);
+	});
+
+	test('does not report comments or XML declarations', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<?xml version="1.0"?>\n<EventFiltering>\n<!-- <BadEvent> -->\n</EventFiltering>'),
+			[]
+		);
 	});
 });
 
