@@ -1,15 +1,17 @@
 import * as assert from 'assert';
+import * as path from 'path';
 
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-import * as vscode from 'vscode';
-// import * as myExtension from '../extension';
+const packageJson = require(path.join(__dirname, '../../../package.json'));
 
-suite('Extension Test Suite', () => {
-	vscode.window.showInformationMessage('Start all tests.');
+suite('Extension Metadata', () => {
+	test('activates only for the Sysmon language', () => {
+		assert.deepStrictEqual(packageJson.activationEvents, ['onLanguage:smc']);
+	});
 
-	test('Sample test', () => {
-		assert.equal(-1, [1, 2, 3].indexOf(5));
-		assert.equal(-1, [1, 2, 3].indexOf(0));
+	test('associates .smc files without claiming generic XML files', () => {
+		const language = packageJson.contributes.languages.find((entry: any) => entry.id === 'smc');
+
+		assert.ok(language, 'Expected smc language contribution');
+		assert.deepStrictEqual(language.extensions, ['.smc']);
 	});
 });

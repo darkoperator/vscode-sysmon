@@ -12,7 +12,7 @@
 		"Snippets"
 	],
 	"activationEvents": [
-		"*"
+		"onLanguage:smc"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -30,8 +30,7 @@
 					"smc"
 				],
 				"extensions": [
-					"smc",
-					"xml"
+					".smc"
 				],
 				"configuration": "./language-configuration.json"
 			}
