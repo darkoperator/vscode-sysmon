@@ -34,7 +34,7 @@ const CONDITION_ALIASES = [
 	'not ends with'
 ];
 
-export function getAttributeCompletions(linePrefix: string): string[] | undefined {
+export function getAttributeCompletions(linePrefix: string): readonly string[] | undefined {
 	if (linePrefix.endsWith('condition="')) {
 		return CONDITION_COMPLETIONS;
 	}
@@ -120,7 +120,7 @@ function getActiveEvent(documentText: string, offset: number): SysmonEventDefini
 	return activeEvent;
 }
 
-function getAllowedAttributeValues(attributeName: string): string[] | undefined {
+function getAllowedAttributeValues(attributeName: string): readonly string[] | undefined {
 	if (attributeName === 'condition') {
 		return CONDITION_OPERATORS.concat(CONDITION_ALIASES);
 	}
@@ -223,7 +223,7 @@ export function getSysmonDiagnostics(documentText: string): SysmonDiagnostic[] {
 	return diagnostics.concat(getAttributeDiagnostics(documentText));
 }
 
-function toCompletionItems(values: string[]): vscode.CompletionItem[] {
+function toCompletionItems(values: readonly string[]): vscode.CompletionItem[] {
 	return values.map(value => new vscode.CompletionItem(value, vscode.CompletionItemKind.Method));
 }
 
