@@ -55,11 +55,14 @@
 		"@types/mocha": "^5.2.6",
 		"@types/node": "^10.12.21",
 		"@types/vscode": "^1.39.0",
+		"@vscode/test-electron": "^2.5.2",
 		"glob": "^7.1.4",
-		"mocha": "^6.1.4",
-		"tslint": "^5.12.1",
-		"typescript": "^3.3.1",
-		"vscode-test": "^1.2.0"
+		"mocha": "^11.3.0",
+		"tslint": "^5.8.0",
+		"typescript": "^3.3.1"
+	},
+	"overrides": {
+		"serialize-javascript": "^7.0.6"
 	},
 	"license": "SEE LICENSE IN LICENSE.txt",
 	"bugs": {
