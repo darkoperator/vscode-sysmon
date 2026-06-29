@@ -1,10 +1,26 @@
 # Change Log
 
-### Unreleased
+## [2.0.0] - Unreleased
 
-* Changed extension activation to run only for Sysmon language files.
-* Associated Sysmon language mode with `.smc` files without claiming all `.xml` files.
-* Added current Sysmon condition completion operators.
+### Added
+
+- Added a Windows Sysmon schema registry backed by checked-in `4.90` and `4.91` manifests.
+- Added platform-aware schema lookup so future Linux schemas can share version numbers with Windows schemas without colliding.
+- Added VS Code settings for selecting the active Sysmon platform and schema version: `sysmon.platform` and `sysmon.schemaVersion`.
+- Added schema-backed completions for Sysmon event tags, field tags, and condition operators.
+- Added diagnostics for unknown event tags, unknown field tags, and invalid `condition`, `onmatch`, and `groupRelation` attribute values.
+- Added tests for manifest source files, snippets, schema lookup, configuration settings, and schema-aware completion and diagnostic helpers.
+
+### Changed
+
+- Updated the Windows config snippet to offer only supported Windows schema versions `4.91` and `4.90`.
+- Updated condition operator completions to follow the manifest filter list.
+- Changed extension activation to run only for Sysmon language files.
+- Associated Sysmon language mode with `.smc` files without claiming all `.xml` files.
+
+### Removed
+
+- Removed older unsupported Windows schema choices from the Windows config snippet picker.
 
 ## [1.0.0]
 
@@ -69,4 +85,3 @@
 - Support for Schema 4.90 with the Sysmon 15.0 version.
 - Removed support for schema 4.60. 
 - FileExecutableDetected event type support.
-
