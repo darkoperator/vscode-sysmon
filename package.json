@@ -41,7 +41,29 @@
 				"scopeName": "source.sysmon",
 				"path": "./syntaxes/smc.tmLanguage.json"
 			}
-		]
+		],
+		"configuration": {
+			"title": "Sysmon",
+			"properties": {
+				"sysmon.platform": {
+					"type": "string",
+					"default": "windows",
+					"enum": [
+						"windows"
+					],
+					"description": "Sysmon platform used for completions and diagnostics."
+				},
+				"sysmon.schemaVersion": {
+					"type": "string",
+					"default": "4.91",
+					"enum": [
+						"4.91",
+						"4.90"
+					],
+					"description": "Sysmon schema version used for completions and diagnostics."
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

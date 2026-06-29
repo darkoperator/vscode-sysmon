@@ -6,7 +6,9 @@ import {
 	GROUP_RELATION_VALUES,
 	ONMATCH_VALUES,
 	SYSMON_EVENTS,
-	SysmonEventDefinition
+	SysmonEventDefinition,
+	SysmonSchemaDefinition,
+	getSysmonSchema
 } from './sysmonSchema';
 
 export const CONDITION_COMPLETIONS = CONDITION_OPERATORS;
@@ -34,9 +36,21 @@ const CONDITION_ALIASES = [
 	'not ends with'
 ];
 
-export function getAttributeCompletions(linePrefix: string): readonly string[] | undefined {
+function getConfiguredSysmonSchema(): SysmonSchemaDefinition {
+	const configuration = vscode.workspace.getConfiguration('sysmon');
+
+	return getSysmonSchema({
+		platform: configuration.get<string>('platform'),
+		schemaVersion: configuration.get<string>('schemaVersion')
+	});
+}
+
+export function getAttributeCompletions(
+	linePrefix: string,
+	schema: SysmonSchemaDefinition = getSysmonSchema()
+): readonly string[] | undefined {
 	if (linePrefix.endsWith('condition="')) {
-		return CONDITION_COMPLETIONS;
+		return schema.conditionOperators;
 	}
 
 	if (linePrefix.endsWith('onmatch="')) {
@@ -50,7 +64,11 @@ export function getAttributeCompletions(linePrefix: string): readonly string[] |
 	return undefined;
 }
 
-export function getElementCompletions(documentText: string, linePrefix: string): string[] | undefined {
+export function getElementCompletions(
+	documentText: string,
+	linePrefix: string,
+	schema: SysmonSchemaDefinition = getSysmonSchema()
+): string[] | undefined {
 	if (!linePrefix.endsWith('<')) {
 		return undefined;
 	}
@@ -62,10 +80,14 @@ export function getElementCompletions(documentText: string, linePrefix: string):
 		return undefined;
 	}
 
-	return EVENT_TAG_COMPLETIONS;
+	return schema.events.map(event => event.tag);
 }
 
-export function getFieldCompletions(documentText: string, linePrefix: string): string[] | undefined {
+export function getFieldCompletions(
+	documentText: string,
+	linePrefix: string,
+	schema: SysmonSchemaDefinition = getSysmonSchema()
+): string[] | undefined {
 	if (!linePrefix.endsWith('<')) {
 		return undefined;
 	}
@@ -73,7 +95,7 @@ export function getFieldCompletions(documentText: string, linePrefix: string): s
 	let activeEventTagIndex = -1;
 	let activeEventFields: string[] | undefined;
 
-	for (const event of SYSMON_EVENTS) {
+	for (const event of schema.events) {
 		const lastEventOpen = documentText.lastIndexOf(`<${event.tag}`);
 		const lastEventClose = documentText.lastIndexOf(`</${event.tag}>`);
 
@@ -102,12 +124,16 @@ function isInsideComment(documentText: string, offset: number): boolean {
 	return lastCommentOpen !== -1 && lastCommentOpen > lastCommentClose;
 }
 
-function getActiveEvent(documentText: string, offset: number): SysmonEventDefinition | undefined {
+function getActiveEvent(
+	documentText: string,
+	offset: number,
+	schema: SysmonSchemaDefinition
+): SysmonEventDefinition | undefined {
 	const textBeforeOffset = documentText.slice(0, offset);
 	let activeEventTagIndex = -1;
 	let activeEvent: SysmonEventDefinition | undefined;
 
-	for (const event of SYSMON_EVENTS) {
+	for (const event of schema.events) {
 		const lastEventOpen = textBeforeOffset.lastIndexOf(`<${event.tag}`);
 		const lastEventClose = textBeforeOffset.lastIndexOf(`</${event.tag}>`);
 
@@ -120,9 +146,12 @@ function getActiveEvent(documentText: string, offset: number): SysmonEventDefini
 	return activeEvent;
 }
 
-function getAllowedAttributeValues(attributeName: string): readonly string[] | undefined {
+function getAllowedAttributeValues(
+	attributeName: string,
+	schema: SysmonSchemaDefinition
+): readonly string[] | undefined {
 	if (attributeName === 'condition') {
-		return CONDITION_OPERATORS.concat(CONDITION_ALIASES);
+		return schema.conditionOperators.concat(CONDITION_ALIASES);
 	}
 
 	if (attributeName === 'onmatch') {
@@ -136,7 +165,10 @@ function getAllowedAttributeValues(attributeName: string): readonly string[] | u
 	return undefined;
 }
 
-function getAttributeDiagnostics(documentText: string): SysmonDiagnostic[] {
+function getAttributeDiagnostics(
+	documentText: string,
+	schema: SysmonSchemaDefinition
+): SysmonDiagnostic[] {
 	const diagnostics: SysmonDiagnostic[] = [];
 	const attributePattern = /\b(condition|onmatch|groupRelation)="([^"]*)"/g;
 	let match: RegExpExecArray | null;
@@ -146,7 +178,7 @@ function getAttributeDiagnostics(documentText: string): SysmonDiagnostic[] {
 		const attributeValue = match[2];
 		const valueStart = match.index + attributeName.length + '="'.length;
 		const valueEnd = valueStart + attributeValue.length;
-		const allowedValues = getAllowedAttributeValues(attributeName);
+		const allowedValues = getAllowedAttributeValues(attributeName, schema);
 
 		if (!allowedValues || allowedValues.indexOf(attributeValue) !== -1) {
 			continue;
@@ -167,9 +199,12 @@ function getAttributeDiagnostics(documentText: string): SysmonDiagnostic[] {
 	return diagnostics;
 }
 
-export function getSysmonDiagnostics(documentText: string): SysmonDiagnostic[] {
+export function getSysmonDiagnostics(
+	documentText: string,
+	schema: SysmonSchemaDefinition = getSysmonSchema()
+): SysmonDiagnostic[] {
 	const diagnostics: SysmonDiagnostic[] = [];
-	const knownEventTags = new Set(SYSMON_EVENTS.map(event => event.tag));
+	const knownEventTags = new Set(schema.events.map(event => event.tag));
 	const structuralTags = new Set(STRUCTURAL_TAGS);
 	const tagPattern = /<([A-Za-z][A-Za-z0-9]*)\b[^>]*>/g;
 	let match: RegExpExecArray | null;
@@ -188,7 +223,7 @@ export function getSysmonDiagnostics(documentText: string): SysmonDiagnostic[] {
 			continue;
 		}
 
-		const activeEvent = getActiveEvent(documentText, tagStart);
+		const activeEvent = getActiveEvent(documentText, tagStart, schema);
 
 		if (activeEvent) {
 			if (tagName === activeEvent.tag) {
@@ -220,7 +255,7 @@ export function getSysmonDiagnostics(documentText: string): SysmonDiagnostic[] {
 		});
 	}
 
-	return diagnostics.concat(getAttributeDiagnostics(documentText));
+	return diagnostics.concat(getAttributeDiagnostics(documentText, schema));
 }
 
 function toCompletionItems(values: readonly string[]): vscode.CompletionItem[] {
@@ -243,9 +278,11 @@ function updateDiagnostics(document: vscode.TextDocument, diagnosticCollection: 
 		return;
 	}
 
+	const schema = getConfiguredSysmonSchema();
+
 	diagnosticCollection.set(
 		document.uri,
-		getSysmonDiagnostics(document.getText()).map(diagnostic => toDiagnostic(document, diagnostic))
+		getSysmonDiagnostics(document.getText(), schema).map(diagnostic => toDiagnostic(document, diagnostic))
 	);
 }
 
@@ -258,9 +295,10 @@ export function activate(context: vscode.ExtensionContext) {
 			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
 				const linePrefix = document.lineAt(position).text.substr(0, position.character);
 				const documentText = document.getText();
-				const values = getAttributeCompletions(linePrefix)
-					|| getFieldCompletions(documentText, linePrefix)
-					|| getElementCompletions(documentText, linePrefix);
+				const schema = getConfiguredSysmonSchema();
+				const values = getAttributeCompletions(linePrefix, schema)
+					|| getFieldCompletions(documentText, linePrefix, schema)
+					|| getElementCompletions(documentText, linePrefix, schema);
 
 				if (!values) {
 					return undefined;
@@ -285,6 +323,15 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.workspace.onDidOpenTextDocument(document => updateDiagnostics(document, diagnosticCollection)),
 		vscode.workspace.onDidChangeTextDocument(event => updateDiagnostics(event.document, diagnosticCollection)),
 		vscode.workspace.onDidSaveTextDocument(document => updateDiagnostics(document, diagnosticCollection)),
+		vscode.workspace.onDidChangeConfiguration(event => {
+			if (!event.affectsConfiguration('sysmon.platform') && !event.affectsConfiguration('sysmon.schemaVersion')) {
+				return;
+			}
+
+			for (const document of vscode.workspace.textDocuments) {
+				updateDiagnostics(document, diagnosticCollection);
+			}
+		}),
 		vscode.workspace.onDidCloseTextDocument(document => {
 			if (document.languageId === 'smc') {
 				diagnosticCollection.delete(document.uri);
