@@ -1,20 +1,26 @@
 import * as assert from 'assert';
 import {
 	CONDITION_OPERATORS,
+	DEFAULT_SYSMON_SCHEMA_PLATFORM,
 	DEFAULT_SYSMON_SCHEMA_VERSION,
 	GROUP_RELATION_VALUES,
 	ONMATCH_VALUES,
 	SYSMON_BINARY_VERSION,
 	SYSMON_EVENTS,
 	SYSMON_SCHEMAS,
+	SYSMON_SCHEMA_PLATFORM,
 	SYSMON_SCHEMA_VERSION,
 	getEventDefinition,
-	getSysmonSchema
+	getSysmonSchema,
+	getSysmonSchemaPlatforms,
+	getSysmonSchemaVersions
 } from '../../sysmonSchema';
 
 suite('Sysmon Schema Data', () => {
 	test('default schema metadata points to Windows Sysmon 4.91', () => {
+		assert.strictEqual(DEFAULT_SYSMON_SCHEMA_PLATFORM, 'windows');
 		assert.strictEqual(DEFAULT_SYSMON_SCHEMA_VERSION, '4.91');
+		assert.strictEqual(SYSMON_SCHEMA_PLATFORM, 'windows');
 		assert.strictEqual(SYSMON_SCHEMA_VERSION, '4.91');
 		assert.strictEqual(SYSMON_BINARY_VERSION, '18');
 		assert.strictEqual(getSysmonSchema().schemaVersion, '4.91');
@@ -31,10 +37,20 @@ suite('Sysmon Schema Data', () => {
 		);
 	});
 
-	test('gets schemas by version and falls back to the default schema', () => {
-		assert.strictEqual(getSysmonSchema('4.90').schemaVersion, '4.90');
-		assert.strictEqual(getSysmonSchema('4.91').schemaVersion, '4.91');
-		assert.strictEqual(getSysmonSchema('does-not-exist').schemaVersion, '4.91');
+	test('gets schemas by platform and version and falls back to the default schema', () => {
+		assert.strictEqual(getSysmonSchema({ platform: 'windows', schemaVersion: '4.90' }).schemaVersion, '4.90');
+		assert.strictEqual(getSysmonSchema({ platform: 'windows', schemaVersion: '4.91' }).schemaVersion, '4.91');
+		assert.strictEqual(getSysmonSchema({ platform: 'linux', schemaVersion: '4.91' }).platform, 'windows');
+		assert.strictEqual(getSysmonSchema({ platform: 'windows', schemaVersion: 'does-not-exist' }).schemaVersion, '4.91');
+		assert.strictEqual(getSysmonSchema({ platform: 'does-not-exist', schemaVersion: '4.90' }).schemaVersion, '4.91');
+		assert.strictEqual(getSysmonSchema().schemaVersion, '4.91');
+	});
+
+	test('lists supported schema platforms and platform-scoped versions', () => {
+		assert.deepStrictEqual(getSysmonSchemaPlatforms(), ['windows']);
+		assert.deepStrictEqual(getSysmonSchemaVersions('windows'), ['4.91', '4.90']);
+		assert.deepStrictEqual(getSysmonSchemaVersions('linux'), []);
+		assert.deepStrictEqual(getSysmonSchemaVersions(), ['4.91', '4.90']);
 	});
 
 	test('condition operators match current completion values', () => {
@@ -221,7 +237,7 @@ suite('Sysmon Schema Data', () => {
 	});
 
 	test('Windows 4.90 schema exposes the supported filterable event surface', () => {
-		const schema = getSysmonSchema('4.90');
+		const schema = getSysmonSchema({ platform: 'windows', schemaVersion: '4.90' });
 
 		assert.strictEqual(schema.schemaVersion, '4.90');
 		assert.strictEqual(schema.binaryVersion, '18');
