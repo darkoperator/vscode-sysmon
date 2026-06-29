@@ -11,8 +11,25 @@ import {
 	getFieldCompletions,
 	getSysmonDiagnostics
 } from '../../extension';
+import { SysmonSchemaDefinition } from '../../sysmonSchema';
 
 const packageJson = require(path.join(__dirname, '../../../package.json'));
+const TEST_SCHEMA: SysmonSchemaDefinition = {
+	platform: 'windows',
+	schemaVersion: 'test',
+	binaryVersion: 'test',
+	conditionOperators: ['custom condition'],
+	events: [
+		{
+			name: 'CustomEvent',
+			eventId: 999,
+			tag: 'CustomEvent',
+			fields: [
+				{ name: 'CustomField' }
+			]
+		}
+	]
+};
 
 suite('Extension Metadata', () => {
 	test('activates only for the Sysmon language', () => {
@@ -24,6 +41,15 @@ suite('Extension Metadata', () => {
 
 		assert.ok(language, 'Expected smc language contribution');
 		assert.deepStrictEqual(language.extensions, ['.smc']);
+	});
+
+	test('contributes schema platform and version settings', () => {
+		const properties = packageJson.contributes.configuration.properties;
+
+		assert.strictEqual(properties['sysmon.platform'].default, 'windows');
+		assert.deepStrictEqual(properties['sysmon.platform'].enum, ['windows']);
+		assert.strictEqual(properties['sysmon.schemaVersion'].default, '4.91');
+		assert.deepStrictEqual(properties['sysmon.schemaVersion'].enum, ['4.91', '4.90']);
 	});
 });
 
@@ -59,6 +85,13 @@ suite('Diagnostic Helpers', () => {
 	test('does not report known field tags inside known events', () => {
 		assert.deepStrictEqual(
 			getSysmonDiagnostics('<EventFiltering>\n<ProcessCreate>\n<Image condition="is">cmd.exe</Image>\n</ProcessCreate>\n</EventFiltering>'),
+			[]
+		);
+	});
+
+	test('diagnostic helper accepts an explicit schema', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<EventFiltering>\n<CustomEvent>\n<CustomField condition="custom condition">value</CustomField>\n</CustomEvent>\n</EventFiltering>', TEST_SCHEMA),
 			[]
 		);
 	});
@@ -355,5 +388,11 @@ suite('Completion Helpers', () => {
 		assert.strictEqual(getAttributeCompletions('<Image name="'), undefined);
 		assert.strictEqual(getAttributeCompletions('<Image condition="value'), undefined);
 		assert.strictEqual(getAttributeCompletions('<Image>'), undefined);
+	});
+
+	test('completion helpers accept an explicit schema', () => {
+		assert.deepStrictEqual(getAttributeCompletions('<CustomField condition="', TEST_SCHEMA), ['custom condition']);
+		assert.deepStrictEqual(getElementCompletions('<EventFiltering>\n<', '<', TEST_SCHEMA), ['CustomEvent']);
+		assert.deepStrictEqual(getFieldCompletions('<CustomEvent>\n<', '<', TEST_SCHEMA), ['CustomField']);
 	});
 });
