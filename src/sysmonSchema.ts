@@ -11,8 +11,15 @@ export interface SysmonEventDefinition {
 	readonly fields: readonly SysmonFieldDefinition[];
 }
 
+export type SysmonSchemaPlatform = 'windows';
+
+export interface SysmonSchemaLookup {
+	readonly platform?: string;
+	readonly schemaVersion?: string;
+}
+
 export interface SysmonSchemaDefinition {
-	readonly platform: 'windows';
+	readonly platform: SysmonSchemaPlatform;
 	readonly schemaVersion: string;
 	readonly binaryVersion: string;
 	readonly conditionOperators: readonly string[];
@@ -459,6 +466,7 @@ const WINDOWS_SYSMON_EVENTS: SysmonEventDefinition[] = [
 ];
 
 export const DEFAULT_SYSMON_SCHEMA_VERSION = '4.91';
+export const DEFAULT_SYSMON_SCHEMA_PLATFORM: SysmonSchemaPlatform = 'windows';
 
 function freezeField(field: SysmonFieldDefinition): SysmonFieldDefinition {
 	const clone = field.description === undefined
@@ -511,21 +519,72 @@ export const SYSMON_SCHEMAS: readonly SysmonSchemaDefinition[] = Object.freeze([
 ]);
 
 function getDefaultSysmonSchema(): SysmonSchemaDefinition {
-	const schema = SYSMON_SCHEMAS.find(candidate => candidate.schemaVersion === DEFAULT_SYSMON_SCHEMA_VERSION);
+	const schema = SYSMON_SCHEMAS.find(candidate =>
+		candidate.platform === DEFAULT_SYSMON_SCHEMA_PLATFORM
+		&& candidate.schemaVersion === DEFAULT_SYSMON_SCHEMA_VERSION
+	);
 
 	if (!schema) {
-		throw new Error(`Default Sysmon schema ${DEFAULT_SYSMON_SCHEMA_VERSION} is not registered.`);
+		throw new Error(`Default Sysmon schema ${DEFAULT_SYSMON_SCHEMA_PLATFORM}:${DEFAULT_SYSMON_SCHEMA_VERSION} is not registered.`);
 	}
 
 	return schema;
 }
 
-export function getSysmonSchema(version: string = DEFAULT_SYSMON_SCHEMA_VERSION): SysmonSchemaDefinition {
-	return SYSMON_SCHEMAS.find(schema => schema.schemaVersion === version) || getDefaultSysmonSchema();
+export function getSysmonSchemaPlatforms(): readonly SysmonSchemaPlatform[] {
+	const platforms = SYSMON_SCHEMAS.map(schema => schema.platform);
+
+	return platforms.filter((platform, index) => platforms.indexOf(platform) === index);
+}
+
+export function getSysmonSchemaVersions(platform: string = DEFAULT_SYSMON_SCHEMA_PLATFORM): readonly string[] {
+	return SYSMON_SCHEMAS
+		.filter(schema => schema.platform === platform)
+		.map(schema => schema.schemaVersion);
+}
+
+function getSchemaPlatform(platform: string | undefined): SysmonSchemaPlatform {
+	return platform !== undefined && getSysmonSchemaPlatforms().indexOf(platform as SysmonSchemaPlatform) !== -1
+		? platform as SysmonSchemaPlatform
+		: DEFAULT_SYSMON_SCHEMA_PLATFORM;
+}
+
+function getDefaultSchemaVersion(platform: SysmonSchemaPlatform): string {
+	const versions = getSysmonSchemaVersions(platform);
+
+	if (platform === DEFAULT_SYSMON_SCHEMA_PLATFORM && versions.indexOf(DEFAULT_SYSMON_SCHEMA_VERSION) !== -1) {
+		return DEFAULT_SYSMON_SCHEMA_VERSION;
+	}
+
+	return versions[0] || DEFAULT_SYSMON_SCHEMA_VERSION;
+}
+
+function isKnownSchemaPlatform(platform: string | undefined): boolean {
+	return platform === undefined || getSysmonSchemaPlatforms().indexOf(platform as SysmonSchemaPlatform) !== -1;
+}
+
+function getSchemaVersion(platform: SysmonSchemaPlatform, schemaVersion: string | undefined, useRequestedVersion: boolean): string {
+	const versions = getSysmonSchemaVersions(platform);
+
+	return useRequestedVersion && schemaVersion !== undefined && versions.indexOf(schemaVersion) !== -1
+		? schemaVersion
+		: getDefaultSchemaVersion(platform);
+}
+
+export function getSysmonSchema(lookup: SysmonSchemaLookup = {}): SysmonSchemaDefinition {
+	const platform = getSchemaPlatform(lookup.platform);
+	const schemaVersion = getSchemaVersion(platform, lookup.schemaVersion, isKnownSchemaPlatform(lookup.platform));
+	const schema = SYSMON_SCHEMAS.find(candidate =>
+		candidate.platform === platform
+		&& candidate.schemaVersion === schemaVersion
+	);
+
+	return schema || getDefaultSysmonSchema();
 }
 
 const DEFAULT_SYSMON_SCHEMA = getDefaultSysmonSchema();
 
+export const SYSMON_SCHEMA_PLATFORM = DEFAULT_SYSMON_SCHEMA.platform;
 export const SYSMON_SCHEMA_VERSION = DEFAULT_SYSMON_SCHEMA.schemaVersion;
 export const SYSMON_BINARY_VERSION = DEFAULT_SYSMON_SCHEMA.binaryVersion;
 export const CONDITION_OPERATORS = DEFAULT_SYSMON_SCHEMA.conditionOperators;
