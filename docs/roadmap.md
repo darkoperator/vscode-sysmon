@@ -16,21 +16,29 @@ Implemented recently:
 
 ## Pending Features
 
-### 1. Schema Version Selection
+### 1. Schema Platform and Version Selection
 
-Add a VS Code setting such as:
+Add VS Code settings such as:
 
 ```json
+"sysmon.platform": "windows",
 "sysmon.schemaVersion": "4.91"
 ```
 
-Use the selected schema for completions and diagnostics instead of always using the default `4.91` schema.
+Use the selected platform and schema version for completions and diagnostics instead of always using the default Windows `4.91` schema.
+
+Important design note:
+
+- Schema version numbers are scoped by platform.
+- Windows `4.91` and Linux `4.91` should be treated as different schemas if Linux schema data is added later.
+- The next implementation slice should expose only `windows` as a selectable platform until Linux manifest data exists.
 
 Why next:
 
 - It directly builds on the new schema registry.
 - It is lower risk than runtime XML loading.
-- It makes the checked-in `4.90` schema user-visible beyond the snippet picker.
+- It makes the checked-in Windows `4.90` schema user-visible beyond the snippet picker.
+- It avoids hard-coding a Windows-only assumption into schema lookup.
 
 Likely files:
 
@@ -38,6 +46,10 @@ Likely files:
 - `src/extension.ts` for reading workspace configuration.
 - `src/sysmonSchema.ts` if helper APIs are needed for schema lookup.
 - `src/test/suite/extension.test.ts` and `src/test/suite/sysmonSchema.test.ts` for tests.
+
+Related spec:
+
+- `docs/superpowers/specs/2026-06-28-schema-version-selection-design.md`
 
 ### 2. Manifest Parser or Generator
 
@@ -55,7 +67,41 @@ Likely files:
 - `src/sysmonSchema.ts` or a generated data file as output.
 - Tests that compare generated data against expected schema metadata.
 
-### 3. User-Provided Schema File
+### 3. Linux Schema Support
+
+Add Linux Sysmon schemas as separate platform-scoped registry entries.
+
+Why:
+
+- Linux and Windows Sysmon can share schema version numbers while having different fields or configuration options.
+- Platform-aware lookup is needed before Linux schema support is added.
+
+Expected future layout:
+
+```text
+schema/manifests/windows/sysmon-4.91.xml
+schema/manifests/windows/sysmon-4.90.xml
+schema/manifests/linux/sysmon-4.91.xml
+```
+
+Expected future lookup behavior:
+
+```ts
+getSysmonSchema({ platform: 'windows', schemaVersion: '4.91' })
+getSysmonSchema({ platform: 'linux', schemaVersion: '4.91' })
+```
+
+Those calls may return different schema data even though the version string is the same.
+
+Likely files:
+
+- `schema/manifests/linux/*.xml`.
+- `src/sysmonSchema.ts` for Linux schema registry entries.
+- `package.json` to expose `linux` in `sysmon.platform` once Linux data exists.
+- `src/test/suite/sysmonSchema.test.ts`.
+- `src/test/suite/extension.test.ts`.
+
+### 4. User-Provided Schema File
 
 Allow users to point the extension at a local Sysmon manifest XML file.
 
@@ -74,7 +120,7 @@ Likely files:
 - New schema loading/parsing module.
 - Tests for missing files, invalid XML, and fallback behavior.
 
-### 4. XML-Aware Parsing
+### 5. XML-Aware Parsing
 
 Replace lightweight text scanning with XML-aware parsing for completions and diagnostics.
 
@@ -89,7 +135,7 @@ Likely files:
 - `src/extension.ts` to use parsed document state.
 - Existing completion and diagnostic tests, plus new malformed/nested XML cases.
 
-### 5. Snippet and Schema Alignment
+### 6. Snippet and Schema Alignment
 
 Generate or validate snippets from schema data.
 
@@ -104,7 +150,7 @@ Likely files:
 - New validation or generation script under `scripts/`.
 - `src/test/suite/snippets.test.ts`.
 
-### 6. Documentation Update
+### 7. Documentation Update
 
 Update user-facing docs to reflect the current extension behavior.
 
@@ -118,7 +164,7 @@ Likely files:
 - `README.md`.
 - `CHANGELOG.md`.
 
-### 7. Schema-Aware Root Diagnostics
+### 8. Schema-Aware Root Diagnostics
 
 Validate the root `<Sysmon schemaversion="...">` value.
 
@@ -137,4 +183,4 @@ Likely files:
 
 Start with **Schema Version Selection**.
 
-It is the best next slice because it exercises the registry we just added without requiring a manifest parser, runtime file loading, or a major diagnostics rewrite.
+It is now defined as **Schema Platform and Version Selection**. It is the best next slice because it exercises the registry we just added without requiring Linux schema data, a manifest parser, runtime file loading, or a major diagnostics rewrite.
