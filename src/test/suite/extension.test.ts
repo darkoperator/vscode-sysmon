@@ -83,6 +83,13 @@ suite('Diagnostic Helpers', () => {
 		assert.strictEqual(diagnostics[0].message, 'Unknown Sysmon field tag "DestinationIp" for event "ProcessCreate".');
 	});
 
+	test('does not report manifest-backed ProcessCreate fields', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<EventFiltering>\n<ProcessCreate>\n<RuleName condition="is">technique_id=T1059</RuleName>\n<ParentUser condition="contains">admin</ParentUser>\n</ProcessCreate>\n</EventFiltering>'),
+			[]
+		);
+	});
+
 	test('does not report unknown field diagnostics outside known events', () => {
 		assert.deepStrictEqual(
 			getSysmonDiagnostics('<EventFiltering>\n<BadField>\n</EventFiltering>'),
@@ -171,9 +178,9 @@ suite('Completion Helpers', () => {
 		assert.deepStrictEqual(CONDITION_COMPLETIONS, [
 			'is',
 			'is not',
-			'is any',
 			'contains',
 			'contains any',
+			'is any',
 			'contains all',
 			'excludes',
 			'excludes any',
@@ -220,12 +227,12 @@ suite('Completion Helpers', () => {
 			'WmiEvent',
 			'DnsQuery',
 			'FileDelete',
-			'FileBlockExecutable',
-			'FileExecutableDetected',
-			'FileBlockShredding',
-			'FileDeleteDetected',
 			'ClipboardChange',
-			'ProcessTampering'
+			'ProcessTampering',
+			'FileDeleteDetected',
+			'FileBlockExecutable',
+			'FileBlockShredding',
+			'FileExecutableDetected'
 		]);
 	});
 
@@ -255,14 +262,29 @@ suite('Completion Helpers', () => {
 		assert.deepStrictEqual(
 			getFieldCompletions('<ProcessCreate>\n<', '<'),
 			[
+				'RuleName',
+				'UtcTime',
+				'ProcessGuid',
+				'ProcessId',
 				'Image',
+				'FileVersion',
+				'Description',
+				'Product',
+				'Company',
+				'OriginalFileName',
 				'CommandLine',
+				'CurrentDirectory',
+				'User',
+				'LogonGuid',
+				'LogonId',
+				'TerminalSessionId',
+				'IntegrityLevel',
+				'Hashes',
+				'ParentProcessGuid',
+				'ParentProcessId',
 				'ParentImage',
 				'ParentCommandLine',
-				'User',
-				'IntegrityLevel',
-				'CurrentDirectory',
-				'Hashes'
+				'ParentUser'
 			]
 		);
 	});
@@ -271,16 +293,24 @@ suite('Completion Helpers', () => {
 		assert.deepStrictEqual(
 			getFieldCompletions('<NetworkConnect>\n<', '<'),
 			[
+				'RuleName',
+				'UtcTime',
+				'ProcessGuid',
+				'ProcessId',
 				'Image',
-				'DestinationIp',
-				'DestinationHostname',
-				'DestinationPort',
-				'DestinationPortName',
+				'User',
+				'Protocol',
+				'Initiated',
+				'SourceIsIpv6',
 				'SourceIp',
 				'SourceHostname',
 				'SourcePort',
-				'Protocol',
-				'User'
+				'SourcePortName',
+				'DestinationIsIpv6',
+				'DestinationIp',
+				'DestinationHostname',
+				'DestinationPort',
+				'DestinationPortName'
 			]
 		);
 	});
