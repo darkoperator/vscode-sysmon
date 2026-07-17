@@ -108,7 +108,8 @@ Settings changes (`workspace/didChangeConfiguration`) rebuild the active schema 
 ## Distribution and CI
 
 - **`sysmon-lsp`:** GitHub Actions release workflow on tag push building binaries for `macos-arm64`, `macos-x64`, `linux-x64`, `linux-arm64`, `windows-x64`, attached to the GitHub Release with predictable asset names the extension glue can construct.
-- **`zed-sysmon`:** usable immediately as a Zed *dev extension* (install from local directory); published to the Zed extension registry via PR to `zed-industries/extensions` once v1 is verified.
+- **`zed-sysmon`:** developed in its own dedicated repository (e.g., `~/Documents/GitHub/zed-sysmon`) following the Zed extension layout (`extension.toml` at the repo root, `languages/`, `snippets/`, `src/lib.rs`, `Cargo.toml`). During development it is installed via Zed's *Extensions → Install Dev Extension* pointing at the local folder — no fork of any Zed repo is required for this.
+- **Registry publishing (after v1 is verified):** fork and clone `zed-industries/extensions`, add `zed-sysmon` as a **git submodule** under `extensions/sysmon`, add an entry to its `extensions.toml`, run `pnpm sort-extensions`, and open a PR. The extensions repo holds only a pinned submodule reference to the `zed-sysmon` repo, never the code itself; version bumps are follow-up PRs that update `version` and the submodule pin.
 
 ## Testing
 
