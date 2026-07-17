@@ -51,7 +51,7 @@ The VS Code extension remains unchanged. `sysmon-lsp` is a clean-room Rust port 
 
 ## Component 1: `sysmon-lsp` (Rust language server)
 
-**Framework:** `tower-lsp` or `lsp-server` (rust-analyzer's crate) — final pick during implementation. **XML parsing:** `quick-xml`. **Transport:** stdio.
+**Framework:** `lsp-server` + `lsp-types` (the rust-analyzer stack) — synchronous, minimal dependencies, no async runtime required for a server of this size. **XML parsing:** `quick-xml`. **Transport:** stdio.
 
 **Manifests:** the same manifest XML files as vscode-sysmon (`schema/manifests/windows/{4.91,4.90}.xml`, `schema/manifests/linux/4.90.xml`) copied into the repo and embedded in the binary with `include_str!`.
 
