@@ -4,7 +4,14 @@ This Visual Studio Code extension helps with writing Microsoft Sysinternals Sysm
 
 ## Features
 
-This extension offers snippets for building Microsoft Sysinternals Sysmon XML configurations. The extension is based on the 4.30 version of the Sysinternals Sysmon schema. It also provides automatic closing of element tags for filter fields.
+This extension helps you author Microsoft Sysinternals Sysmon XML configurations with:
+
+- **Snippets** for building the initial configuration structure, rule groups, rules, events, and individual filter fields.
+- **Schema-backed IntelliSense** for event tags, field tags, and `condition`, `onmatch`, and `groupRelation` attribute values, driven directly by the bundled Sysmon manifests.
+- **Diagnostics** that flag unknown event tags, unknown field tags, invalid attribute values, and unsupported root `schemaversion` values.
+- **Automatic closing** of element tags for filter fields.
+
+Completions and diagnostics are backed by checked-in Sysmon manifests: Windows schema versions **4.91** (default) and **4.90**, and Linux schema version **4.90** (including Linux-only events such as `eBPFEvent`). The active platform and schema version are selectable through settings.
 
 ## Usage
 
@@ -23,6 +30,29 @@ A RuleGroups and Rules snippets have options ready for name and setting logic.
 Individual filters in a Rule or outside of one are easier to write.
 
 ![Filter](images/filter.gif)
+
+## IntelliSense and Diagnostics
+
+Beyond snippets, the extension understands the Sysmon schema for the active platform and version:
+
+- Completing an element inside `<EventFiltering>` suggests the event tags supported by the schema.
+- Completing an element inside a known event suggests that event's field tags.
+- Completing a `condition`, `onmatch`, or `groupRelation` attribute value suggests the allowed values.
+
+The extension also reports problems as warnings while you type:
+
+- Unknown event tags inside `<EventFiltering>`.
+- Unknown field tags for the surrounding event.
+- Invalid `condition`, `onmatch`, or `groupRelation` attribute values.
+- A root `<Sysmon schemaversion="...">` value that is not supported for the active platform.
+
+## Settings
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `sysmon.platform` | `windows` | Sysmon platform used for completions and diagnostics. Supported values: `windows`, `linux`. |
+| `sysmon.schemaVersion` | `4.91` | Sysmon schema version used for completions and diagnostics. Windows supports `4.91` and `4.90`; Linux supports `4.90`. |
+| `sysmon.customSchemaPath` | `""` | Path to a custom Sysmon manifest XML. When set and loadable it overrides the built-in schema (filtered by `sysmon.platform`); missing or invalid files fall back to the built-in schema. Relative paths resolve against the first workspace folder. |
 
 ## Snippets
 
@@ -148,6 +178,23 @@ When working with Rule elements in the config where he order of the field play a
 | !sysmon_processtampering_set | Sysmon EventType SYSMON_PROCESS_IMAGE_TAMPERING filter set. |
 
 ## Release Notes
+
+See [CHANGELOG.md](CHANGELOG.md) for the full history.
+
+### 2.1.0
+
+* Added Linux Sysmon schema support (`4.90`) via `sysmon.platform: linux`.
+* Added the `sysmon.customSchemaPath` setting for loading a local manifest XML.
+* Added Format Document / Format Selection for `.smc` files.
+* Added diagnostics for duplicate include/exclude filters on the same event.
+* Replaced line-based heuristics with a tolerant XML scanner for more accurate completions and diagnostics.
+
+### 2.0.0
+
+* Added a Windows Sysmon schema registry backed by checked-in `4.90` and `4.91` manifests, parsed at runtime.
+* Added schema-backed completions for event tags, field tags, and condition operators.
+* Added diagnostics for unknown event tags, unknown field tags, invalid attribute values, and unsupported root `schemaversion` values.
+* Added `sysmon.platform` and `sysmon.schemaVersion` settings to select the active schema.
 
 ### 1.3.0
 

@@ -11,6 +11,7 @@ import {
 	getFieldCompletions,
 	getSysmonDiagnostics
 } from '../../extension';
+import { formatSysmonXml } from '../../formatter';
 import { SysmonSchemaDefinition } from '../../sysmonSchema';
 
 const packageJson = require(path.join(__dirname, '../../../package.json'));
@@ -47,9 +48,47 @@ suite('Extension Metadata', () => {
 		const properties = packageJson.contributes.configuration.properties;
 
 		assert.strictEqual(properties['sysmon.platform'].default, 'windows');
-		assert.deepStrictEqual(properties['sysmon.platform'].enum, ['windows']);
+		assert.deepStrictEqual(properties['sysmon.platform'].enum, ['windows', 'linux']);
 		assert.strictEqual(properties['sysmon.schemaVersion'].default, '4.91');
 		assert.deepStrictEqual(properties['sysmon.schemaVersion'].enum, ['4.91', '4.90']);
+	});
+
+	test('contributes a custom schema path setting', () => {
+		const properties = packageJson.contributes.configuration.properties;
+
+		assert.strictEqual(properties['sysmon.customSchemaPath'].type, 'string');
+		assert.strictEqual(properties['sysmon.customSchemaPath'].default, '');
+	});
+});
+
+suite('Formatting Helpers', () => {
+	test('formats a compact Sysmon config as indented XML', () => {
+		assert.strictEqual(
+			formatSysmonXml('<Sysmon schemaversion="4.91"><EventFiltering><ProcessCreate onmatch="include"><Image condition="is">cmd.exe</Image></ProcessCreate></EventFiltering></Sysmon>', { insertSpaces: true, tabSize: 2 }),
+			[
+				'<Sysmon schemaversion="4.91">',
+				'  <EventFiltering>',
+				'    <ProcessCreate onmatch="include">',
+				'      <Image condition="is">cmd.exe</Image>',
+				'    </ProcessCreate>',
+				'  </EventFiltering>',
+				'</Sysmon>'
+			].join('\n')
+		);
+	});
+
+	test('preserves XML declarations and comments while formatting', () => {
+		assert.strictEqual(
+			formatSysmonXml('<?xml version="1.0"?><Sysmon><!-- keep --><EventFiltering></EventFiltering></Sysmon>', { insertSpaces: false, tabSize: 4 }),
+			[
+				'<?xml version="1.0"?>',
+				'<Sysmon>',
+				'\t<!-- keep -->',
+				'\t<EventFiltering>',
+				'\t</EventFiltering>',
+				'</Sysmon>'
+			].join('\n')
+		);
 	});
 });
 
@@ -159,6 +198,37 @@ suite('Diagnostic Helpers', () => {
 		assert.strictEqual(diagnostics[0].end, documentText.indexOf('bad') + 'bad'.length);
 	});
 
+	test('reports duplicate include filters for the same event tag', () => {
+		const documentText = '<EventFiltering>\n<ProcessCreate onmatch="include">\n</ProcessCreate>\n<ProcessCreate onmatch="include">\n</ProcessCreate>\n</EventFiltering>';
+		const duplicateValueStart = documentText.lastIndexOf('include');
+		const diagnostics = getSysmonDiagnostics(documentText);
+
+		assert.strictEqual(diagnostics.length, 1);
+		assert.strictEqual(diagnostics[0].message, 'Duplicate Sysmon ProcessCreate filter with onmatch="include". Only one include filter is allowed per event tag.');
+		assert.strictEqual(diagnostics[0].severity, vscode.DiagnosticSeverity.Warning);
+		assert.strictEqual(diagnostics[0].start, duplicateValueStart);
+		assert.strictEqual(diagnostics[0].end, duplicateValueStart + 'include'.length);
+	});
+
+	test('reports duplicate exclude filters for the same event tag', () => {
+		const documentText = '<EventFiltering>\n<NetworkConnect onmatch="exclude">\n</NetworkConnect>\n<NetworkConnect onmatch="exclude">\n</NetworkConnect>\n</EventFiltering>';
+		const duplicateValueStart = documentText.lastIndexOf('exclude');
+		const diagnostics = getSysmonDiagnostics(documentText);
+
+		assert.strictEqual(diagnostics.length, 1);
+		assert.strictEqual(diagnostics[0].message, 'Duplicate Sysmon NetworkConnect filter with onmatch="exclude". Only one exclude filter is allowed per event tag.');
+		assert.strictEqual(diagnostics[0].severity, vscode.DiagnosticSeverity.Warning);
+		assert.strictEqual(diagnostics[0].start, duplicateValueStart);
+		assert.strictEqual(diagnostics[0].end, duplicateValueStart + 'exclude'.length);
+	});
+
+	test('allows one include and one exclude filter for the same event tag', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<EventFiltering>\n<ProcessCreate onmatch="include">\n</ProcessCreate>\n<ProcessCreate onmatch="exclude">\n</ProcessCreate>\n</EventFiltering>'),
+			[]
+		);
+	});
+
 	test('reports invalid groupRelation attribute values', () => {
 		const documentText = '<EventFiltering>\n<RuleGroup groupRelation="bad">\n</RuleGroup>\n</EventFiltering>';
 		const diagnostics = getSysmonDiagnostics(documentText);
@@ -177,9 +247,43 @@ suite('Diagnostic Helpers', () => {
 		);
 	});
 
-	test('does not report TrustedSec condition spelling aliases', () => {
+	test('reports invalid condition spellings not in schema', () => {
+		const diags = getSysmonDiagnostics('<EventFiltering>\n<ProcessCreate>\n<Image condition="begins with">C:\\Users\\</Image>\n<CommandLine condition="not ends with">.tmp</CommandLine>\n</ProcessCreate>\n</EventFiltering>');
+		assert.strictEqual(diags.length, 2);
+	});
+
+	test('reports unsupported root schema version', () => {
+		const documentText = '<Sysmon schemaversion="4.30">\n<EventFiltering>\n</EventFiltering>\n</Sysmon>';
+		const diagnostics = getSysmonDiagnostics(documentText);
+
+		assert.strictEqual(diagnostics.length, 1);
+		assert.strictEqual(diagnostics[0].message, 'Unsupported Sysmon schema version "4.30". Supported versions: 4.91, 4.90.');
+		assert.strictEqual(diagnostics[0].severity, vscode.DiagnosticSeverity.Warning);
+		assert.strictEqual(diagnostics[0].start, documentText.indexOf('4.30'));
+		assert.strictEqual(diagnostics[0].end, documentText.indexOf('4.30') + '4.30'.length);
+	});
+
+	test('does not report supported root schema versions', () => {
 		assert.deepStrictEqual(
-			getSysmonDiagnostics('<EventFiltering>\n<ProcessCreate>\n<Image condition="begins with">C:\\Users\\</Image>\n<CommandLine condition="not ends with">.tmp</CommandLine>\n</ProcessCreate>\n</EventFiltering>'),
+			getSysmonDiagnostics('<Sysmon schemaversion="4.91">\n<EventFiltering>\n</EventFiltering>\n</Sysmon>'),
+			[]
+		);
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<Sysmon schemaversion="4.90">\n<EventFiltering>\n</EventFiltering>\n</Sysmon>'),
+			[]
+		);
+	});
+
+	test('does not report a root tag without a schema version', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<Sysmon>\n<EventFiltering>\n</EventFiltering>\n</Sysmon>'),
+			[]
+		);
+	});
+
+	test('does not report root schema versions inside comments', () => {
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<!-- <Sysmon schemaversion="4.30"> -->\n<EventFiltering>\n</EventFiltering>'),
 			[]
 		);
 	});
@@ -203,6 +307,45 @@ suite('Diagnostic Helpers', () => {
 			getSysmonDiagnostics('<?xml version="1.0"?>\n<EventFiltering>\n<!-- <BadEvent> -->\n</EventFiltering>'),
 			[]
 		);
+	});
+
+	test('ignores a commented-out event when resolving the active event', () => {
+		// CommandLine is a ProcessCreate field but NOT a ProcessTerminate field. The
+		// commented-out <ProcessCreate> must not be treated as the active event, so the
+		// invalid field is correctly attributed to ProcessTerminate.
+		const diagnostics = getSysmonDiagnostics(
+			'<EventFiltering>\n<ProcessTerminate onmatch="include">\n<!-- <ProcessCreate> -->\n<CommandLine condition="is">x</CommandLine>\n</ProcessTerminate>\n</EventFiltering>'
+		);
+
+		assert.strictEqual(diagnostics.length, 1);
+		assert.strictEqual(diagnostics[0].message, 'Unknown Sysmon field tag "CommandLine" for event "ProcessTerminate".');
+	});
+
+	test('does not treat attribute-looking text content as an attribute', () => {
+		// The condition="bad" substring lives in element text, not in a tag, so it must
+		// not be flagged. Only the real condition="is" attribute is validated.
+		assert.deepStrictEqual(
+			getSysmonDiagnostics('<EventFiltering>\n<ProcessCreate>\n<Image condition="is">value with condition="bad" inside</Image>\n</ProcessCreate>\n</EventFiltering>'),
+			[]
+		);
+	});
+
+	test('resolves the active event through nested RuleGroup structure', () => {
+		const diagnostics = getSysmonDiagnostics(
+			'<EventFiltering>\n<RuleGroup groupRelation="or">\n<NetworkConnect onmatch="include">\n<CommandLine condition="is">x</CommandLine>\n</NetworkConnect>\n</RuleGroup>\n</EventFiltering>'
+		);
+
+		assert.strictEqual(diagnostics.length, 1);
+		assert.strictEqual(diagnostics[0].message, 'Unknown Sysmon field tag "CommandLine" for event "NetworkConnect".');
+	});
+
+	test('reports invalid condition values on multiline tags', () => {
+		const documentText = '<EventFiltering>\n<ProcessCreate>\n<Image\ncondition="bad">cmd.exe</Image>\n</ProcessCreate>\n</EventFiltering>';
+		const diagnostics = getSysmonDiagnostics(documentText);
+
+		assert.strictEqual(diagnostics.length, 1);
+		assert.strictEqual(diagnostics[0].message, 'Invalid Sysmon condition value "bad".');
+		assert.strictEqual(diagnostics[0].start, documentText.indexOf('bad'));
 	});
 });
 
@@ -276,6 +419,16 @@ suite('Completion Helpers', () => {
 		);
 	});
 
+	test('returns event tag completions at the cursor when the document continues afterward', () => {
+		const documentText = '<Sysmon>\n<EventFiltering>\n<\n</EventFiltering>\n</Sysmon>';
+		const cursorOffset = documentText.indexOf('<\n</EventFiltering>') + 1;
+
+		assert.deepStrictEqual(
+			(getElementCompletions as any)(documentText, '<', cursorOffset),
+			EVENT_TAG_COMPLETIONS
+		);
+	});
+
 	test('returns no event tag completions outside EventFiltering', () => {
 		assert.strictEqual(getElementCompletions('<Sysmon>\n<', '<'), undefined);
 	});
@@ -294,6 +447,40 @@ suite('Completion Helpers', () => {
 	test('returns ProcessCreate field completions inside an open ProcessCreate block', () => {
 		assert.deepStrictEqual(
 			getFieldCompletions('<ProcessCreate>\n<', '<'),
+			[
+				'RuleName',
+				'UtcTime',
+				'ProcessGuid',
+				'ProcessId',
+				'Image',
+				'FileVersion',
+				'Description',
+				'Product',
+				'Company',
+				'OriginalFileName',
+				'CommandLine',
+				'CurrentDirectory',
+				'User',
+				'LogonGuid',
+				'LogonId',
+				'TerminalSessionId',
+				'IntegrityLevel',
+				'Hashes',
+				'ParentProcessGuid',
+				'ParentProcessId',
+				'ParentImage',
+				'ParentCommandLine',
+				'ParentUser'
+			]
+		);
+	});
+
+	test('returns field completions at the cursor when the event closes later', () => {
+		const documentText = '<EventFiltering>\n<ProcessCreate>\n<\n</ProcessCreate>\n</EventFiltering>';
+		const cursorOffset = documentText.indexOf('<\n</ProcessCreate>') + 1;
+
+		assert.deepStrictEqual(
+			(getFieldCompletions as any)(documentText, '<', cursorOffset),
 			[
 				'RuleName',
 				'UtcTime',

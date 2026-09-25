@@ -1,3 +1,7 @@
+import * as fs from 'fs';
+import * as path from 'path';
+import { parseManifest } from './parseManifest';
+
 export interface SysmonFieldDefinition {
 	readonly name: string;
 	readonly description?: string;
@@ -11,7 +15,7 @@ export interface SysmonEventDefinition {
 	readonly fields: readonly SysmonFieldDefinition[];
 }
 
-export type SysmonSchemaPlatform = 'windows';
+export type SysmonSchemaPlatform = 'windows' | 'linux';
 
 export interface SysmonSchemaLookup {
 	readonly platform?: string;
@@ -26,25 +30,6 @@ export interface SysmonSchemaDefinition {
 	readonly events: readonly SysmonEventDefinition[];
 }
 
-const WINDOWS_CONDITION_OPERATORS = [
-	'is',
-	'is not',
-	'contains',
-	'contains any',
-	'is any',
-	'contains all',
-	'excludes',
-	'excludes any',
-	'excludes all',
-	'begin with',
-	'not begin with',
-	'end with',
-	'not end with',
-	'less than',
-	'more than',
-	'image'
-];
-
 export const ONMATCH_VALUES = [
 	'include',
 	'exclude'
@@ -55,468 +40,62 @@ export const GROUP_RELATION_VALUES = [
 	'or'
 ];
 
-const WINDOWS_SYSMON_EVENTS: SysmonEventDefinition[] = [
-	{
-		name: 'ProcessCreate',
-		eventId: 1,
-		tag: 'ProcessCreate',
-		description: 'Process creation event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'Image' },
-			{ name: 'FileVersion' },
-			{ name: 'Description' },
-			{ name: 'Product' },
-			{ name: 'Company' },
-			{ name: 'OriginalFileName' },
-			{ name: 'CommandLine' },
-			{ name: 'CurrentDirectory' },
-			{ name: 'User' },
-			{ name: 'LogonGuid' },
-			{ name: 'LogonId' },
-			{ name: 'TerminalSessionId' },
-			{ name: 'IntegrityLevel' },
-			{ name: 'Hashes' },
-			{ name: 'ParentProcessGuid' },
-			{ name: 'ParentProcessId' },
-			{ name: 'ParentImage' },
-			{ name: 'ParentCommandLine' },
-			{ name: 'ParentUser' }
-		]
-	},
-	{
-		name: 'FileCreateTime',
-		eventId: 2,
-		tag: 'FileCreateTime',
-		description: 'File creation time changed event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'Image' },
-			{ name: 'TargetFilename' },
-			{ name: 'CreationUtcTime' },
-			{ name: 'PreviousCreationUtcTime' },
-			{ name: 'User' }
-		]
-	},
-	{
-		name: 'NetworkConnect',
-		eventId: 3,
-		tag: 'NetworkConnect',
-		description: 'Network connection event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'Image' },
-			{ name: 'User' },
-			{ name: 'Protocol' },
-			{ name: 'Initiated' },
-			{ name: 'SourceIsIpv6' },
-			{ name: 'SourceIp' },
-			{ name: 'SourceHostname' },
-			{ name: 'SourcePort' },
-			{ name: 'SourcePortName' },
-			{ name: 'DestinationIsIpv6' },
-			{ name: 'DestinationIp' },
-			{ name: 'DestinationHostname' },
-			{ name: 'DestinationPort' },
-			{ name: 'DestinationPortName' }
-		]
-	},
-	{
-		name: 'ProcessTerminate',
-		eventId: 5,
-		tag: 'ProcessTerminate',
-		description: 'Process terminated event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'Image' },
-			{ name: 'User' }
-		]
-	},
-	{
-		name: 'DriverLoad',
-		eventId: 6,
-		tag: 'DriverLoad',
-		description: 'Driver loaded event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ImageLoaded' },
-			{ name: 'Hashes' },
-			{ name: 'Signed' },
-			{ name: 'Signature' },
-			{ name: 'SignatureStatus' }
-		]
-	},
-	{
-		name: 'ImageLoad',
-		eventId: 7,
-		tag: 'ImageLoad',
-		description: 'Image loaded into a process.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'Image' },
-			{ name: 'ImageLoaded' },
-			{ name: 'FileVersion' },
-			{ name: 'Description' },
-			{ name: 'Product' },
-			{ name: 'Company' },
-			{ name: 'OriginalFileName' },
-			{ name: 'Hashes' },
-			{ name: 'Signed' },
-			{ name: 'Signature' },
-			{ name: 'SignatureStatus' },
-			{ name: 'User' }
-		]
-	},
-	{
-		name: 'CreateRemoteThread',
-		eventId: 8,
-		tag: 'CreateRemoteThread',
-		description: 'Remote thread created event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'SourceProcessGuid' },
-			{ name: 'SourceProcessId' },
-			{ name: 'SourceImage' },
-			{ name: 'TargetProcessGuid' },
-			{ name: 'TargetProcessId' },
-			{ name: 'TargetImage' },
-			{ name: 'NewThreadId' },
-			{ name: 'StartAddress' },
-			{ name: 'StartModule' },
-			{ name: 'StartFunction' },
-			{ name: 'SourceUser' },
-			{ name: 'TargetUser' }
-		]
-	},
-	{
-		name: 'RawAccessRead',
-		eventId: 9,
-		tag: 'RawAccessRead',
-		description: 'Raw disk access read event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'Image' },
-			{ name: 'Device' },
-			{ name: 'User' }
-		]
-	},
-	{
-		name: 'ProcessAccess',
-		eventId: 10,
-		tag: 'ProcessAccess',
-		description: 'Process access event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'SourceProcessGUID' },
-			{ name: 'SourceProcessId' },
-			{ name: 'SourceThreadId' },
-			{ name: 'SourceImage' },
-			{ name: 'TargetProcessGUID' },
-			{ name: 'TargetProcessId' },
-			{ name: 'TargetImage' },
-			{ name: 'GrantedAccess' },
-			{ name: 'CallTrace' },
-			{ name: 'SourceUser' },
-			{ name: 'TargetUser' }
-		]
-	},
-	{
-		name: 'FileCreate',
-		eventId: 11,
-		tag: 'FileCreate',
-		description: 'File created event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'Image' },
-			{ name: 'TargetFilename' },
-			{ name: 'CreationUtcTime' },
-			{ name: 'User' }
-		]
-	},
-	{
-		name: 'RegistryEvent',
-		eventId: 12,
-		tag: 'RegistryEvent',
-		description: 'Registry object event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'EventType' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'Image' },
-			{ name: 'TargetObject' },
-			{ name: 'User' },
-			{ name: 'Details' },
-			{ name: 'NewName' }
-		]
-	},
-	{
-		name: 'FileCreateStreamHash',
-		eventId: 15,
-		tag: 'FileCreateStreamHash',
-		description: 'File stream created event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'Image' },
-			{ name: 'TargetFilename' },
-			{ name: 'CreationUtcTime' },
-			{ name: 'Hash' },
-			{ name: 'Contents' },
-			{ name: 'User' }
-		]
-	},
-	{
-		name: 'PipeEvent',
-		eventId: 17,
-		tag: 'PipeEvent',
-		description: 'Named pipe event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'EventType' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'PipeName' },
-			{ name: 'Image' },
-			{ name: 'User' }
-		]
-	},
-	{
-		name: 'WmiEvent',
-		eventId: 19,
-		tag: 'WmiEvent',
-		description: 'WMI event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'EventType' },
-			{ name: 'UtcTime' },
-			{ name: 'Operation' },
-			{ name: 'User' },
-			{ name: 'EventNamespace' },
-			{ name: 'Name' },
-			{ name: 'Query' },
-			{ name: 'Type' },
-			{ name: 'Destination' },
-			{ name: 'Consumer' },
-			{ name: 'Filter' }
-		]
-	},
-	{
-		name: 'DnsQuery',
-		eventId: 22,
-		tag: 'DnsQuery',
-		description: 'DNS query event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'QueryName' },
-			{ name: 'QueryStatus' },
-			{ name: 'QueryResults' },
-			{ name: 'Image' },
-			{ name: 'User' }
-		]
-	},
-	{
-		name: 'FileDelete',
-		eventId: 23,
-		tag: 'FileDelete',
-		description: 'File deleted and archived event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'User' },
-			{ name: 'Image' },
-			{ name: 'TargetFilename' },
-			{ name: 'Hashes' },
-			{ name: 'IsExecutable' },
-			{ name: 'Archived' }
-		]
-	},
-	{
-		name: 'ClipboardChange',
-		eventId: 24,
-		tag: 'ClipboardChange',
-		description: 'Clipboard content changed event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'Image' },
-			{ name: 'Session' },
-			{ name: 'Hashes' },
-			{ name: 'ClientInfo' },
-			{ name: 'Archived' },
-			{ name: 'User' }
-		]
-	},
-	{
-		name: 'ProcessTampering',
-		eventId: 25,
-		tag: 'ProcessTampering',
-		description: 'Process image tampering event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'Image' },
-			{ name: 'Type' },
-			{ name: 'User' }
-		]
-	},
-	{
-		name: 'FileDeleteDetected',
-		eventId: 26,
-		tag: 'FileDeleteDetected',
-		description: 'File delete detected event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'User' },
-			{ name: 'Image' },
-			{ name: 'TargetFilename' },
-			{ name: 'Hashes' },
-			{ name: 'IsExecutable' }
-		]
-	},
-	{
-		name: 'FileBlockExecutable',
-		eventId: 27,
-		tag: 'FileBlockExecutable',
-		description: 'Executable file creation blocked event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'User' },
-			{ name: 'Image' },
-			{ name: 'TargetFilename' },
-			{ name: 'Hashes' }
-		]
-	},
-	{
-		name: 'FileBlockShredding',
-		eventId: 28,
-		tag: 'FileBlockShredding',
-		description: 'File shredding blocked event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'User' },
-			{ name: 'Image' },
-			{ name: 'TargetFilename' },
-			{ name: 'Hashes' },
-			{ name: 'IsExecutable' }
-		]
-	},
-	{
-		name: 'FileExecutableDetected',
-		eventId: 29,
-		tag: 'FileExecutableDetected',
-		description: 'Executable file creation detected event.',
-		fields: [
-			{ name: 'RuleName' },
-			{ name: 'UtcTime' },
-			{ name: 'ProcessGuid' },
-			{ name: 'ProcessId' },
-			{ name: 'User' },
-			{ name: 'Image' },
-			{ name: 'TargetFilename' },
-			{ name: 'Hashes' }
-		]
-	}
-];
-
 export const DEFAULT_SYSMON_SCHEMA_VERSION = '4.91';
 export const DEFAULT_SYSMON_SCHEMA_PLATFORM: SysmonSchemaPlatform = 'windows';
 
-function freezeField(field: SysmonFieldDefinition): SysmonFieldDefinition {
-	const clone = field.description === undefined
-		? { name: field.name }
-		: { name: field.name, description: field.description };
+const KNOWN_PLATFORMS: SysmonSchemaPlatform[] = ['windows', 'linux'];
 
-	return Object.freeze(clone);
-}
+function parseVersionParts(version: string): number[] {
+	return version.split('.').map(part => {
+		const parsed = parseInt(part, 10);
 
-function freezeFields(fields: readonly SysmonFieldDefinition[]): readonly SysmonFieldDefinition[] {
-	return Object.freeze(fields.map(field => freezeField(field)));
-}
-
-function freezeEvent(event: SysmonEventDefinition): SysmonEventDefinition {
-	const clone = event.description === undefined
-		? {
-			name: event.name,
-			eventId: event.eventId,
-			tag: event.tag,
-			fields: freezeFields(event.fields)
-		}
-		: {
-			name: event.name,
-			eventId: event.eventId,
-			tag: event.tag,
-			description: event.description,
-			fields: freezeFields(event.fields)
-		};
-
-	return Object.freeze(clone);
-}
-
-function freezeEvents(events: readonly SysmonEventDefinition[]): readonly SysmonEventDefinition[] {
-	return Object.freeze(events.map(event => freezeEvent(event)));
-}
-
-function createWindowsSchema(schemaVersion: string): SysmonSchemaDefinition {
-	return Object.freeze({
-		platform: 'windows',
-		schemaVersion,
-		binaryVersion: '18',
-		conditionOperators: Object.freeze(WINDOWS_CONDITION_OPERATORS.slice()),
-		events: freezeEvents(WINDOWS_SYSMON_EVENTS)
+		return isNaN(parsed) ? 0 : parsed;
 	});
 }
 
-export const SYSMON_SCHEMAS: readonly SysmonSchemaDefinition[] = Object.freeze([
-	createWindowsSchema('4.91'),
-	createWindowsSchema('4.90')
-]);
+export function compareSchemaVersionsDescending(left: string, right: string): number {
+	const leftParts = parseVersionParts(left);
+	const rightParts = parseVersionParts(right);
+	const length = Math.max(leftParts.length, rightParts.length);
+
+	for (let index = 0; index < length; index++) {
+		const leftPart = leftParts[index] || 0;
+		const rightPart = rightParts[index] || 0;
+
+		if (leftPart !== rightPart) {
+			return rightPart - leftPart;
+		}
+	}
+
+	return 0;
+}
+
+function getManifestVersion(fileName: string): string {
+	return path.basename(fileName, '.xml').replace(/^sysmon-/, '');
+}
+
+function loadSchemas(): readonly SysmonSchemaDefinition[] {
+	const manifestsRoot = path.join(__dirname, '../schema/manifests');
+	const schemas: SysmonSchemaDefinition[] = [];
+
+	for (const platform of KNOWN_PLATFORMS) {
+		const platformDir = path.join(manifestsRoot, platform);
+		if (!fs.existsSync(platformDir)) {
+			continue;
+		}
+		const files = fs.readdirSync(platformDir)
+			.filter(f => f.endsWith('.xml'))
+			.sort((left, right) => compareSchemaVersionsDescending(getManifestVersion(left), getManifestVersion(right)));
+		for (const file of files) {
+			const xmlContent = fs.readFileSync(path.join(platformDir, file), 'utf8');
+			schemas.push(parseManifest(xmlContent, platform));
+		}
+	}
+
+	return Object.freeze(schemas);
+}
+
+export const SYSMON_SCHEMAS: readonly SysmonSchemaDefinition[] = loadSchemas();
 
 function getDefaultSysmonSchema(): SysmonSchemaDefinition {
 	const schema = SYSMON_SCHEMAS.find(candidate =>
@@ -580,6 +159,26 @@ export function getSysmonSchema(lookup: SysmonSchemaLookup = {}): SysmonSchemaDe
 	);
 
 	return schema || getDefaultSysmonSchema();
+}
+
+// Load a Sysmon schema from an arbitrary manifest XML file. Returns undefined if
+// the file is missing or does not parse into a usable manifest, so callers can
+// fall back to a built-in schema. The platform selects which target-scoped events
+// are exposed (see parseManifest).
+export function loadSysmonSchemaFromFile(filePath: string, platform?: string): SysmonSchemaDefinition | undefined {
+	let xmlContent: string;
+
+	try {
+		xmlContent = fs.readFileSync(filePath, 'utf8');
+	} catch {
+		return undefined;
+	}
+
+	try {
+		return parseManifest(xmlContent, getSchemaPlatform(platform));
+	} catch {
+		return undefined;
+	}
 }
 
 const DEFAULT_SYSMON_SCHEMA = getDefaultSysmonSchema();

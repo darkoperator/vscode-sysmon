@@ -19,136 +19,113 @@ Implemented recently:
 
 ## Pending Features
 
-### 1. Manifest Parser or Generator
+### 1. Manifest Parser or Generator — DONE
 
-Parse checked-in manifest XML files and generate schema data used by `src/sysmonSchema.ts`.
+Status: Completed via runtime XML parsing (chose Option A over a build-time generator).
 
-Why:
+What shipped:
 
-- Avoids manual drift between XML manifests and TypeScript schema data.
-- Makes future schema additions safer.
+- `src/parseManifest.ts` parses a Sysmon manifest XML into a `SysmonSchemaDefinition` (events, fields, condition operators, schema/binary versions). It deduplicates shared-tag events (RegistryEvent, PipeEvent, WmiEvent) by `rulename`, merging their field sets.
+- `src/sysmonSchema.ts` auto-discovers and parses `schema/manifests/{platform}/*.xml` at module load time. The hand-maintained event/field/condition arrays were removed.
+- `fast-xml-parser` added as a runtime dependency.
+- `src/test/suite/parseManifest.test.ts` covers version parsing, condition operators, shared-tag dedup/field merge, tag uniqueness, and frozen output.
 
-Likely files:
+Why (satisfied):
 
-- New script under `scripts/`, for example `scripts/generateSysmonSchema.ts` or `.js`.
-- `schema/manifests/windows/*.xml` as inputs.
-- `src/sysmonSchema.ts` or a generated data file as output.
-- Tests that compare generated data against expected schema metadata.
+- Removes manual drift between XML manifests and schema data — the manifests are now the single source of truth.
+- Adding a new schema is now just dropping an XML file into `schema/manifests/{platform}/` with no TypeScript changes.
 
-### 2. Linux Schema Support
+### 2. Linux Schema Support — DONE
 
-Add Linux Sysmon schemas as separate platform-scoped registry entries.
+Status: Completed, using a real Linux Sysmon manifest provided from an actual Linux install.
 
-Why:
+Key design correction: Sysmon does **not** ship a separate Linux manifest with different schema data. Microsoft uses one manifest per version where each event/option carries a `target` attribute (`all`, `windows`, `linux`, or `internal`). The only Linux-distinguished event in schema `4.90` is `eBPFEvent` (`target="linux"`, ID 100); everything else is `target="all"`. So a platform's event surface is derived by filtering on `target`, not by maintaining duplicate per-platform data.
 
-- Linux and Windows Sysmon can share schema version numbers while having different fields or configuration options.
-- Platform-aware lookup is needed before Linux schema support is added.
+What shipped:
 
-Expected future layout:
+- `schema/manifests/linux/sysmon-4.90.xml` — the authoritative Linux manifest (a `<manifests>`-wrapped, `target`-tagged document).
+- `parseManifest` now handles the `<manifests>` wrapper and filters events by `target`: a platform includes events with no target, `target="all"`, or `target="<platform>"`, and always excludes `target="internal"`.
+- `sysmonSchema.ts`: `SysmonSchemaPlatform` is now `'windows' | 'linux'` and `KNOWN_PLATFORMS` discovers the `linux` manifest directory.
+- `package.json`: `sysmon.platform` now offers `linux`.
+- Tests: parser target-filtering (Linux includes `eBPFEvent`, Windows excludes it), platform/version registry, and the updated `sysmon.platform` enum.
 
-```text
-schema/manifests/windows/sysmon-4.91.xml
-schema/manifests/windows/sysmon-4.90.xml
-schema/manifests/linux/sysmon-4.91.xml
-```
+Result: `getSysmonSchema({ platform: 'linux', schemaVersion: '4.90' })` returns the shared event surface plus `eBPFEvent`; the Windows schemas are unaffected.
 
-Expected future lookup behavior:
+### 3. User-Provided Schema File — DONE
 
-```ts
-getSysmonSchema({ platform: 'windows', schemaVersion: '4.91' })
-getSysmonSchema({ platform: 'linux', schemaVersion: '4.91' })
-```
+Status: Completed.
 
-Those calls may return different schema data even though the version string is the same.
+What shipped:
 
-Likely files:
+- `sysmon.customSchemaPath` setting (`package.json`). Relative paths resolve against the first workspace folder.
+- `loadSysmonSchemaFromFile(filePath, platform)` in `src/sysmonSchema.ts` — reads and parses a manifest, returning `undefined` for a missing file or one that does not parse into a manifest. Reuses the `target`-aware `parseManifest`, so a custom manifest is filtered by the configured `sysmon.platform`.
+- `src/extension.ts` integration: when `customSchemaPath` is set and loadable it overrides the built-in schema; otherwise it falls back to the built-in schema and shows a one-time warning (no spam on every keystroke). Loads are mtime-cached so the file is not re-parsed on every edit, and a `FileSystemWatcher` (re-created when the setting changes) refreshes diagnostics when the custom file changes on disk.
+- Tests: loader behavior (valid Windows manifest, target-filtered Linux manifest, missing file, non-manifest file) and the new setting contribution.
 
-- `schema/manifests/linux/*.xml`.
-- `src/sysmonSchema.ts` for Linux schema registry entries.
-- `package.json` to expose `linux` in `sysmon.platform` once Linux data exists.
-- `src/test/suite/sysmonSchema.test.ts`.
-- `src/test/suite/extension.test.ts`.
+Design choices: a loadable custom schema overrides rather than augments the registry (predictable single source while testing a new release); errors fall back silently-with-one-warning rather than blocking; refresh is driven by both the config change and a file watcher.
 
-### 3. User-Provided Schema File
+### 4. XML-Aware Parsing — DONE
 
-Allow users to point the extension at a local Sysmon manifest XML file.
+Status: Completed with a tolerant scanner (not a strict parser, because completions run on incomplete mid-edit input).
 
-Why:
+What shipped:
 
-- Useful for users testing newer Sysmon releases before the extension ships a checked-in schema.
+- `src/xmlScanner.ts` — a single-pass, tolerant scanner that emits tags (with name and attribute-value offsets) and comment ranges, and exposes `openElementsBefore(scan, offset)` for nesting-aware "open elements at a point". It degrades gracefully: an unterminated trailing tag or unterminated attribute value is simply not emitted.
+- `src/extension.ts` now resolves EventFiltering context and the active event from the scanner's open-element stack, excludes comment regions structurally, and validates attribute values only on real attributes.
+- Removed the `lastIndexOf`-based heuristics (`isInsideOpenEventFiltering`, `getActiveEvent`, regex tag/attribute scanning).
 
-Risk:
+Bugs this fixed (covered by new tests):
 
-- Higher complexity than checked-in schemas because it needs file loading, error handling, caching, and diagnostics refresh behavior.
+- A commented-out event no longer hijacks active-event resolution.
+- Attribute-looking text in element content is no longer falsely flagged.
+- The active event resolves correctly through nested `RuleGroup` structure.
+- Multiline tags are validated correctly.
 
-Likely files:
+Tests: `src/test/suite/xmlScanner.test.ts` (scanner units) plus new malformed/nested/comment/multiline cases in `src/test/suite/extension.test.ts`.
 
-- `package.json` for configuration contribution.
-- `src/extension.ts` for configuration and refresh behavior.
-- New schema loading/parsing module.
-- Tests for missing files, invalid XML, and fallback behavior.
+### 5. Snippet and Schema Alignment — DONE
 
-### 4. XML-Aware Parsing
+Status: Completed via schema-derived validation tests (chose validation over a generation script).
 
-Replace lightweight text scanning with XML-aware parsing for completions and diagnostics.
+Drift found and fixed in `snippets/smc.json`:
 
-Why:
+- The condition picker was missing the `is any` operator and ordered several operators differently from the schema. This wrong list was duplicated across the standalone condition snippet **and all 65 field-filter snippets**; every one is now aligned with `CONDITION_OPERATORS`.
+- The Linux config snippet declared schema version `4.81`; it now declares `4.90`, matching the checked-in Linux schema.
 
-- Current logic can be fooled by malformed XML, unusual nesting, comments, or multiline structures.
-- Parser-backed ranges and active-event detection would be more reliable.
+What guards it going forward (`src/test/suite/snippets.test.ts`):
 
-Likely files:
+- Config snippet version pickers are asserted against `getSysmonSchemaVersions('windows')` / `('linux')`.
+- Every `condition="${n|...|}"` picker in the snippets is asserted equal to `CONDITION_OPERATORS`.
+- Event-type snippets are checked for a one-to-one mapping with Windows schema event tags.
 
-- New parser/helper module under `src/`.
-- `src/extension.ts` to use parsed document state.
-- Existing completion and diagnostic tests, plus new malformed/nested XML cases.
+These tests derive their expectations from the schema, so future schema changes that aren't mirrored in the snippets fail the suite.
 
-### 5. Snippet and Schema Alignment
+### 6. Documentation Update — DONE
 
-Generate or validate snippets from schema data.
+Status: Completed.
 
-Why:
+What shipped:
 
-- Prevents drift between `snippets/smc.json` and `src/sysmonSchema.ts`.
-- Helps keep event and field snippets aligned with supported schemas.
+- Rewrote the `README.md` Features section to describe schema-backed completions, diagnostics, automatic tag closing, and the supported `4.90`/`4.91` Windows schemas (it previously referenced only schema `4.30`).
+- Added "IntelliSense and Diagnostics" and "Settings" sections covering the completion/diagnostic behavior and the `sysmon.platform` / `sysmon.schemaVersion` settings.
+- Added a `2.0.0` entry to the README Release Notes with a pointer to `CHANGELOG.md`.
 
-Likely files:
+### 7. Schema-Aware Root Diagnostics — DONE
 
-- `snippets/smc.json`.
-- New validation or generation script under `scripts/`.
-- `src/test/suite/snippets.test.ts`.
+Status: Completed.
 
-### 6. Documentation Update
+What shipped:
 
-Update user-facing docs to reflect the current extension behavior.
-
-Why:
-
-- `README.md` still says the extension is based on Sysmon schema `4.30`.
-- It should mention Windows schemas `4.90` and `4.91`, schema-backed completions, and diagnostics.
-
-Likely files:
-
-- `README.md`.
-- `CHANGELOG.md`.
-
-### 7. Schema-Aware Root Diagnostics
-
-Validate the root `<Sysmon schemaversion="...">` value.
-
-Why:
-
-- The extension now has an explicit supported Windows schema list.
-- It can warn when a Windows config uses unsupported versions outside `4.90` and `4.91`.
-
-Likely files:
-
-- `src/extension.ts` diagnostic helper.
-- `src/sysmonSchema.ts` for supported schema version data if needed.
-- `src/test/suite/extension.test.ts`.
+- `getRootSchemaDiagnostics()` in `src/extension.ts` scans for `<Sysmon schemaversion="...">` and warns when the declared version is outside the supported set for the active platform (e.g. anything other than `4.91`/`4.90` on Windows). The warning range covers the version value, and declarations inside comments are ignored.
+- Supported versions come from `getSysmonSchemaVersions(schema.platform)`, so the rule stays in sync with the manifest registry automatically.
+- `src/test/suite/extension.test.ts` adds cases for unsupported versions, supported versions, a root tag with no version attribute, and commented-out declarations.
 
 ## Recommended Next Feature
 
-Start with **Manifest Parser or Generator** if the next goal is long-term schema maintainability.
+All seven roadmap features are now done (#1 Manifest Parser, #2 Linux Schema Support, #3 User-Provided Schema File, #4 XML-Aware Parsing, #5 Snippet and Schema Alignment, #6 Documentation Update, #7 Schema-Aware Root Diagnostics).
 
-Start with **Linux Schema Support** if the next goal is user-visible platform expansion. The platform-aware schema selection work is already in place, so Linux support can be added as separate platform-scoped schema data without changing the schema lookup model.
+Possible follow-on work beyond this roadmap:
+
+- ~~Cut the `2.0.0` release~~ — 2.0.0 released 2026-07-05; roadmap features #1–#7 ship in `2.1.0`.
+- Expose configuration `<option>` validation (the manifests carry `<options>` the extension does not yet use).
+- Surface Linux-only events more prominently, or add more Linux schema versions as manifests become available.

@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import * as path from 'path';
 import {
 	CONDITION_OPERATORS,
 	DEFAULT_SYSMON_SCHEMA_PLATFORM,
@@ -11,10 +12,14 @@ import {
 	SYSMON_SCHEMA_PLATFORM,
 	SYSMON_SCHEMA_VERSION,
 	getEventDefinition,
+	compareSchemaVersionsDescending,
 	getSysmonSchema,
 	getSysmonSchemaPlatforms,
-	getSysmonSchemaVersions
+	getSysmonSchemaVersions,
+	loadSysmonSchemaFromFile
 } from '../../sysmonSchema';
+
+const PROJECT_ROOT = path.resolve(__dirname, '../../..');
 
 suite('Sysmon Schema Data', () => {
 	test('default schema metadata points to Windows Sysmon 4.91', () => {
@@ -27,30 +32,51 @@ suite('Sysmon Schema Data', () => {
 		assert.strictEqual(getSysmonSchema().platform, 'windows');
 	});
 
-	test('registry contains only supported Windows schema versions', () => {
+	test('registry contains supported Windows and Linux schema versions', () => {
 		assert.deepStrictEqual(
 			SYSMON_SCHEMAS.map(schema => `${schema.platform}:${schema.schemaVersion}`),
 			[
 				'windows:4.91',
-				'windows:4.90'
+				'windows:4.90',
+				'linux:4.90'
 			]
+		);
+	});
+
+	test('sorts schema versions numerically with newest first', () => {
+		assert.deepStrictEqual(
+			['4.9', '4.100', '4.91', '10.1'].sort(compareSchemaVersionsDescending),
+			['10.1', '4.100', '4.91', '4.9']
 		);
 	});
 
 	test('gets schemas by platform and version and falls back to the default schema', () => {
 		assert.strictEqual(getSysmonSchema({ platform: 'windows', schemaVersion: '4.90' }).schemaVersion, '4.90');
 		assert.strictEqual(getSysmonSchema({ platform: 'windows', schemaVersion: '4.91' }).schemaVersion, '4.91');
-		assert.strictEqual(getSysmonSchema({ platform: 'linux', schemaVersion: '4.91' }).platform, 'windows');
+		assert.strictEqual(getSysmonSchema({ platform: 'linux', schemaVersion: '4.90' }).platform, 'linux');
+		assert.strictEqual(getSysmonSchema({ platform: 'linux', schemaVersion: '4.91' }).platform, 'linux');
+		assert.strictEqual(getSysmonSchema({ platform: 'linux', schemaVersion: '4.91' }).schemaVersion, '4.90');
 		assert.strictEqual(getSysmonSchema({ platform: 'windows', schemaVersion: 'does-not-exist' }).schemaVersion, '4.91');
 		assert.strictEqual(getSysmonSchema({ platform: 'does-not-exist', schemaVersion: '4.90' }).schemaVersion, '4.91');
 		assert.strictEqual(getSysmonSchema().schemaVersion, '4.91');
 	});
 
 	test('lists supported schema platforms and platform-scoped versions', () => {
-		assert.deepStrictEqual(getSysmonSchemaPlatforms(), ['windows']);
+		assert.deepStrictEqual(getSysmonSchemaPlatforms(), ['windows', 'linux']);
 		assert.deepStrictEqual(getSysmonSchemaVersions('windows'), ['4.91', '4.90']);
-		assert.deepStrictEqual(getSysmonSchemaVersions('linux'), []);
+		assert.deepStrictEqual(getSysmonSchemaVersions('linux'), ['4.90']);
 		assert.deepStrictEqual(getSysmonSchemaVersions(), ['4.91', '4.90']);
+	});
+
+	test('Linux schema includes the eBPF event and excludes it from Windows', () => {
+		const linux = getSysmonSchema({ platform: 'linux', schemaVersion: '4.90' });
+		const windows = getSysmonSchema({ platform: 'windows', schemaVersion: '4.90' });
+
+		assert.strictEqual(linux.platform, 'linux');
+		assert.strictEqual(linux.binaryVersion, '18');
+		assert.ok(linux.events.some(event => event.tag === 'eBPFEvent'), 'Linux schema should expose eBPFEvent');
+		assert.ok(linux.events.some(event => event.tag === 'ProcessCreate'), 'Linux schema should expose shared events');
+		assert.ok(!windows.events.some(event => event.tag === 'eBPFEvent'), 'Windows schema must not expose the Linux-only eBPFEvent');
 	});
 
 	test('condition operators match current completion values', () => {
@@ -264,5 +290,32 @@ suite('Sysmon Schema Data', () => {
 		assert.strictEqual(getEventDefinition('ProcessCreate')!.name, 'ProcessCreate');
 		assert.strictEqual(getEventDefinition('ImageLoad')!.name, 'ImageLoad');
 		assert.strictEqual(getEventDefinition('DoesNotExist'), undefined);
+	});
+
+	suite('custom schema files', () => {
+		test('loads a Windows manifest from an explicit path', () => {
+			const schema = loadSysmonSchemaFromFile(path.join(PROJECT_ROOT, 'schema/manifests/windows/sysmon-4.91.xml'));
+
+			assert.ok(schema, 'expected a schema');
+			assert.strictEqual(schema!.platform, 'windows');
+			assert.strictEqual(schema!.schemaVersion, '4.91');
+			assert.ok(schema!.events.some(event => event.tag === 'ProcessCreate'));
+		});
+
+		test('applies the requested platform to a target-tagged manifest', () => {
+			const schema = loadSysmonSchemaFromFile(path.join(PROJECT_ROOT, 'schema/manifests/linux/sysmon-4.90.xml'), 'linux');
+
+			assert.ok(schema, 'expected a schema');
+			assert.strictEqual(schema!.platform, 'linux');
+			assert.ok(schema!.events.some(event => event.tag === 'eBPFEvent'));
+		});
+
+		test('returns undefined for a missing file', () => {
+			assert.strictEqual(loadSysmonSchemaFromFile(path.join(PROJECT_ROOT, 'does-not-exist.xml')), undefined);
+		});
+
+		test('returns undefined for a file that is not a Sysmon manifest', () => {
+			assert.strictEqual(loadSysmonSchemaFromFile(path.join(PROJECT_ROOT, 'LICENSE.txt')), undefined);
+		});
 	});
 });
