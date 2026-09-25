@@ -81,13 +81,13 @@
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.6",
-		"@types/node": "^10.12.21",
+		"@types/node": "^22.20.4",
 		"@types/vscode": "^1.39.0",
-		"@vscode/test-electron": "^2.5.2",
+		"@vscode/test-electron": "^3.1.0",
 		"glob": "^7.1.4",
 		"mocha": "^11.3.0",
 		"tslint": "^5.8.0",
-		"typescript": "^3.3.1"
+		"typescript": "^5.9.3"
 	},
 	"overrides": {
 		"serialize-javascript": "^7.0.6"

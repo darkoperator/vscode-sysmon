@@ -17,6 +17,7 @@
 - Aligned every snippet condition picker with the schema condition operators — added the missing `is any` operator and corrected operator ordering across the condition snippet and all field-filter snippets, and updated the Linux config snippet to declare schema version `4.90` instead of `4.81`. Snippet tests now derive their expectations from the schema so these can no longer drift.
 - Replaced the line-scanning heuristics behind completions and diagnostics with a tolerant XML scanner (`src/xmlScanner.ts`). EventFiltering context and the active event are now resolved from proper tag nesting, comment regions are excluded structurally, and attribute values are validated only on real attributes. This fixes false positives and missed errors around commented-out tags, nested rule groups, multiline tags, and attribute-looking text content.
 - Rewrote `README.md` to document schema-backed completions, diagnostics, the supported `4.90`/`4.91` schemas, and the `sysmon.platform` and `sysmon.schemaVersion` settings (it previously referenced only schema `4.30`).
+- Updated dev tooling so the test suite runs against current VS Code releases: `@vscode/test-electron` 3.1, `@types/node` 22, and TypeScript 5.
 
 ## [2.0.0] - 2026-07-05
 
