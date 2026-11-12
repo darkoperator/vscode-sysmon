@@ -114,6 +114,6 @@
 		"publisherId": "84336c4a-0cf5-4d58-b3c0-072b41cacc30"
 	},
 	"dependencies": {
-		"fast-xml-parser": "^5.9.3"
+		"fast-xml-parser": "^5.12.0"
 	}
 }
